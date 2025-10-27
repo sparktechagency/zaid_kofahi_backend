@@ -59,7 +59,18 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function profile(){
+    public function profile()
+    {
         return $this->hasMany(Profile::class);
     }
+
+    protected $appends = ['avatar_url'];
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar
+            ? asset($this->avatar)
+            : 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->full_name);
+    }
+
 }
