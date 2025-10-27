@@ -32,6 +32,7 @@ class AuthService
             'validity' => '10 minute'
         ];
         $user = User::create([
+            'slug' => Str::random(),
             'role' => $data['role'],
             'full_name' => $data['full_name'],
             'user_name' => $data['full_name'],

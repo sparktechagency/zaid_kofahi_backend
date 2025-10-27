@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Organizer\EventController;
+use App\Http\Controllers\Api\Organizer\TransactionController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
 use Illuminate\Http\Request;
@@ -67,6 +68,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/view-event/{id?}',[EventController::class,'viewEvent']);
         Route::patch('/edit-event/{id?}',[EventController::class,'editEvent']);
         Route::delete('/delete-event/{id?}',[EventController::class,'deleteEvent']);
+
+        // trnasaction
+        Route::post('/deposit',[TransactionController::class,'deposit']);
     });
 
     Route::middleware('admin.finance')->prefix('admin-finance')->group(function () {

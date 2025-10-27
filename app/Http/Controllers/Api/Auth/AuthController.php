@@ -47,8 +47,6 @@ class AuthController extends Controller
     }
     public function login(LoginRequest $request)
     {
-
-
         try {
             $data = $request->validated();
             $response = $this->authService->login($data);
