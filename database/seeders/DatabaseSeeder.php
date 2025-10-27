@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $admin = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Admin',
             'user_name' => 'admin',
             'email' => 'admin@gmail.com',
@@ -38,6 +40,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $finance = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Finance',
             'user_name' => 'finance',
             'email' => 'finance@gmail.com',
@@ -52,6 +55,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $support = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Support',
             'user_name' => 'support',
             'email' => 'support@gmail.com',
@@ -66,6 +70,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $playerOne = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Player one',
             'user_name' => 'player@one',
             'email' => 'player.one@gmail.com',
@@ -80,6 +85,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $playerTwo = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Player two',
             'user_name' => 'player@two',
             'email' => 'player.two@gmail.com',
@@ -94,6 +100,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $playerThree = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Player three',
             'user_name' => 'player@three',
             'email' => 'player.three@gmail.com',
@@ -108,6 +115,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $organizerOne = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Organizer one',
             'user_name' => 'organizer@one',
             'email' => 'organizer.one@gmail.com',
@@ -122,6 +130,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $organizerTwo = User::create([
+            'slug' => Str::random(),
             'full_name' => 'Organizer two',
             'user_name' => 'organizer@two',
             'email' => 'organizer.two@gmail.com',

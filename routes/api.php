@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\Organizer\EventController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/social-login', [AuthController::class, 'socialLogin']);
 
 // static page show
-Route::get('pages/{slug}', [StaticPageController::class, 'show']);
+Route::get('pages/{slug?}', [StaticPageController::class, 'show']);
 
 // check token valid
 Route::get('/check-token',[AuthController::class,'checkToken']);
@@ -34,7 +35,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/delete-account', [AuthController::class, 'deleteAccount']);
 
     // static page update
-    Route::post('pages/{slug}', [StaticPageController::class, 'update']);
+    Route::post('pages/{slug?}', [StaticPageController::class, 'update']);
 
     // notification
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']);
@@ -60,7 +61,12 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::middleware('organizer')->prefix('organizer')->group(function () {
-        //
+        // event
+        Route::post('/create-event',[EventController::class,'createEvent']);
+        Route::get('/get-events',[EventController::class,'getEvents']);
+        Route::get('/view-event/{id?}',[EventController::class,'viewEvent']);
+        Route::patch('/edit-event/{id?}',[EventController::class,'editEvent']);
+        Route::delete('/delete-event/{id?}',[EventController::class,'deleteEvent']);
     });
 
     Route::middleware('admin.finance')->prefix('admin-finance')->group(function () {
