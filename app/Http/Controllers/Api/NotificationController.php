@@ -16,19 +16,19 @@ class NotificationController extends Controller
 
         $query = $user->notifications()->latest();
 
-        // if ($request->filled('filter')) {
-        //     switch ($request->filter) {
-        //         case 'unread':
-        //             $query->whereNull('read_at');
-        //             break;
-        //         case 'read':
-        //             $query->whereNotNull('read_at');
-        //             break;
-        //         default:
-        //             // all → কোন শর্ত না
-        //             break;
-        //     }
-        // }
+        if ($request->filled('filter')) {
+            switch ($request->filter) {
+                case 'unread':
+                    $query->whereNull('read_at');
+                    break;
+                case 'read':
+                    $query->whereNotNull('read_at');
+                    break;
+                default:
+                    // all → কোন শর্ত না
+                    break;
+            }
+        }
 
         $notifications = $query->paginate($request->per_page ?? 10);
 
