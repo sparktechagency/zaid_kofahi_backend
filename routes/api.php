@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Organizer\EventController;
 use App\Http\Controllers\Api\Organizer\TransactionController;
+use App\Http\Controllers\Api\Player\DiscoverController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
 use Illuminate\Http\Request;
@@ -58,7 +59,8 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::middleware('player')->prefix('player')->group(function () {
-        //
+        //discover
+        Route::get('/get-events',[DiscoverController::class,'getEvents']);
     });
 
     Route::middleware('organizer')->prefix('organizer')->group(function () {
@@ -69,6 +71,7 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/edit-event/{id?}',[EventController::class,'editEvent']);
         Route::delete('/delete-event/{id?}',[EventController::class,'deleteEvent']);
         Route::get('/get-event-details/{id?}',[EventController::class,'getEventDetails']);
+        Route::post('/event-pay/{id?}',[EventController::class,'eventPay']);
 
         // trnasaction
         Route::post('/deposit',[TransactionController::class,'deposit']);

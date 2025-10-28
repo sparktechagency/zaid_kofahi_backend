@@ -3,9 +3,13 @@
 namespace App\Services\Organizer;
 
 use App\Models\Event;
+use App\Models\Profile;
+use App\Models\Transaction;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EventService
 {
@@ -112,7 +116,7 @@ class EventService
     {
         $event = Event::where('slug', $id)
             ->orWhere('id', $id)
-            ->select('id','slug','title','starting_date','ending_date','time','location','prize_amount','prize_distribution','image')
+            ->select('id', 'slug', 'title', 'starting_date', 'ending_date', 'time', 'location', 'prize_amount', 'prize_distribution', 'image')
             ->first();
 
         if ($event) {
@@ -121,10 +125,41 @@ class EventService
         }
 
         return [
-            'event'=> $event,
+            'event' => $event,
             'joined_players' => 'joined players',
             'top_3_winners' => 'top 3 winners',
             'event_status' => 'event status'
         ];
+    }
+    public function eventPay($data, $id)
+    {
+        $profile = Profile::where('user_id', Auth::id())->first();
+
+        $available_balance = $profile->total_balance - ($profile->total_expence + $profile->total_withdraw);
+
+        if ($available_balance >= $data['amount']) {
+            $profile->increment('total_expence', $data['amount']);
+
+            $event = Event::where('id', $id)
+                ->orWhere('slug', $id)
+                ->first();
+
+            $event->status = 'Upcoming';
+            $event->save();
+
+            $transaction = Transaction::create([
+                'slug' => Str::random(),
+                'user_id' => Auth::id(),
+                'event_id' => $event->id,
+                'type' => 'Payout',
+                'amount' => $data['amount'],
+                'data' => Carbon::now()->format('Y-m-d'),
+                'status' => 'Completed',
+            ]);
+
+            return $transaction;
+        } else {
+            return false;
+        }
     }
 }
