@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profiles', function (Blueprint $table) {
+        Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->decimal('total_balance',10,2)->default(0);
-            $table->decimal('available_balance',10,2)->default(0);
-            $table->decimal('total_expence',10,2)->default(0);
-            $table->decimal('total_withdraw',10,2)->default(0);
+            $table->foreignId('player_id')->constrained('users')->cascadeOnDelete();
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profiles');
+        Schema::dropIfExists('teams');
     }
 };

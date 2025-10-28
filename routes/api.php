@@ -61,6 +61,8 @@ Route::middleware('auth:api')->group(function () {
     Route::middleware('player')->prefix('player')->group(function () {
         //discover
         Route::get('/get-events',[DiscoverController::class,'getEvents']);
+        Route::post('/single-join/{id?}',[DiscoverController::class,'singleJoin']);
+        Route::post('/team-join/{id?}',[DiscoverController::class,'teamJoin']);
     });
 
     Route::middleware('organizer')->prefix('organizer')->group(function () {

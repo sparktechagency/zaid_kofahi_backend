@@ -22,4 +22,10 @@ class DiscoverController extends Controller
         return $this->sendResponse($events, 'All events successfully retrieved.');
 
     }
+
+    public function singleJoin(Request $request, $id)
+    {
+        $event = $this->discoverService->singleJoin($id);
+        return $this->sendResponse($event, 'Single join successfully.', true, 201);
+    }
 }

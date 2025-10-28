@@ -3,6 +3,7 @@
 namespace App\Services\Organizer;
 
 use App\Models\Event;
+use App\Models\EventMember;
 use App\Models\Profile;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -124,9 +125,14 @@ class EventService
             $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
         }
 
+        $joined_players = EventMember::with(['user' => function($q){
+            $q->select('id','slug','full_name','user_name','avatar');
+        }])->where('event_id',$id)->get();
+
         return [
             'event' => $event,
-            'joined_players' => 'joined players',
+            'join' => count($joined_players),
+            'joined_players' => $joined_players,
             'top_3_winners' => 'top 3 winners',
             'event_status' => 'event status'
         ];

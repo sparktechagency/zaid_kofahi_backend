@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $admin->id,
         ]);
 
@@ -51,6 +52,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $finance->id,
         ]);
 
@@ -66,6 +68,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $support->id,
         ]);
 
@@ -81,6 +84,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $playerOne->id,
         ]);
 
@@ -96,6 +100,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $playerTwo->id,
         ]);
 
@@ -111,6 +116,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $playerThree->id,
         ]);
 
@@ -126,6 +132,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $organizerOne->id,
         ]);
 
@@ -141,6 +148,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
+            'slug' => Str::random(),
             'user_id' => $organizerTwo->id,
         ]);
     }

@@ -72,4 +72,9 @@ class User extends Authenticatable implements JWTSubject
             ? asset($this->avatar)
             : 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->full_name);
     }
+
+    public function eventMembers()
+    {
+        return $this->hasMany(EventMember::class,'player_id');
+    }
 }
