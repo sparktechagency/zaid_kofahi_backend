@@ -108,4 +108,23 @@ class EventService
 
         return false;
     }
+    public function getEventDetails($id)
+    {
+        $event = Event::where('slug', $id)
+            ->orWhere('id', $id)
+            ->select('id','slug','title','starting_date','ending_date','time','location','prize_amount','prize_distribution','image')
+            ->first();
+
+        if ($event) {
+            $event->prize_distribution = json_decode($event->prize_distribution);
+            $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+        }
+
+        return [
+            'event'=> $event,
+            'joined_players' => 'joined players',
+            'top_3_winners' => 'top 3 winners',
+            'event_status' => 'event status'
+        ];
+    }
 }

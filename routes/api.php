@@ -68,9 +68,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/view-event/{id?}',[EventController::class,'viewEvent']);
         Route::patch('/edit-event/{id?}',[EventController::class,'editEvent']);
         Route::delete('/delete-event/{id?}',[EventController::class,'deleteEvent']);
+        Route::get('/get-event-details/{id?}',[EventController::class,'getEventDetails']);
 
         // trnasaction
         Route::post('/deposit',[TransactionController::class,'deposit']);
+        Route::get('/get-transactions',[TransactionController::class,'getTransactions']);
+    });
+
+    Route::middleware('player.organizer')->prefix('player-organizer')->group(function () {
+        //
     });
 
     Route::middleware('admin.finance')->prefix('admin-finance')->group(function () {

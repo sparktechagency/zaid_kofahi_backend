@@ -3,6 +3,7 @@
 use App\Http\Middleware\FinanceAdminMiddleware;
 use App\Http\Middleware\OrganizerMiddleware;
 use App\Http\Middleware\PlayerMiddleware;
+use App\Http\Middleware\PlayerOrganizerMiddleware;
 use App\Http\Middleware\SuperAdminFinanceAdminMiddleware;
 use App\Http\Middleware\SuperAdminFinanceAdminSupportAdminMiddleware;
 use App\Http\Middleware\SuperAdminMiddleware;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'support' => SupportAdminMiddleware::class,
             'player' => PlayerMiddleware::class,
             'organizer' => OrganizerMiddleware::class,
+            'player.organizer' => PlayerOrganizerMiddleware::class,
             'admin.finance' => SuperAdminFinanceAdminMiddleware::class,
             'admin.support' => SuperAdminSupportAdminMiddleware::class,
             'admin.finance.support' => SuperAdminFinanceAdminSupportAdminMiddleware::class,

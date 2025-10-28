@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class SuperAdminFinanceAdminSupportAdminMiddleware
+use function PHPUnit\Framework\isArray;
+
+class PlayerOrganizerMiddleware
 {
     /**
      * Handle an incoming request.
@@ -18,10 +20,10 @@ class SuperAdminFinanceAdminSupportAdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            if (Auth::user()->role !== 'ADMIN' && Auth::user()->role !== 'FINANCE' && Auth::user()->role !== 'SUPPORT') {
+            if (Auth::user()->role !== 'ORGANIZER' && Auth::user()->role !== 'PLAYER') {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Unauthorized. You are not super admin or finance admin or support admin.'
+                    'message' => 'Unauthorized. You are not player or organizer.'
                 ], 403);
             }
             return $next($request);

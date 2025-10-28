@@ -65,4 +65,15 @@ class EventController extends Controller
 
         return $this->sendResponse([], 'Event deleted successfully.');
     }
+
+    public function getEventDetails($id)
+    {
+        $event = $this->eventService->getEventDetails($id);
+
+        if (!$event) {
+            return $this->sendError('Event not found.',[],404);
+        }
+
+        return $this->sendResponse($event, 'Event details successfully retrieved.');
+    }
 }

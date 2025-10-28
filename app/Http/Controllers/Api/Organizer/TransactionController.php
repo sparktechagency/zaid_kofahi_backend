@@ -23,4 +23,11 @@ class TransactionController extends Controller
         $transaction = $this->transactionService->deposit($validatedData);
         return $this->sendResponse($transaction, 'Deposit successfully.',true,201);
     }
+
+    public function getTransactions(Request $request)
+    {
+        $events = $this->transactionService->getTransactions($request->per_page);
+        return $this->sendResponse($events, 'Your all transactions successfully retrieved.');
+
+    }
 }

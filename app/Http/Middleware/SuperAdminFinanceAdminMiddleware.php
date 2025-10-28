@@ -18,10 +18,10 @@ class SuperAdminFinanceAdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            if (Auth::user()->role !== 'ADMIN' || Auth::user()->role !== 'FINANCE') {
+            if (Auth::user()->role !== 'ADMIN' && Auth::user()->role !== 'FINANCE') {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Unauthorized. You are not super admin or support admin.'
+                    'message' => 'Unauthorized. You are not super admin or finance admin.'
                 ], 403);
             }
             return $next($request);
