@@ -65,6 +65,10 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
         Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
 
+         // trnasaction
+        Route::post('/deposit', [TransactionController::class, 'deposit']);
+        Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
+
         // my profile
         Route::post('/create-team', [MyProfileContrller::class, 'createTeam']);
         Route::get('/get-teams', [MyProfileContrller::class, 'getTeams']);
