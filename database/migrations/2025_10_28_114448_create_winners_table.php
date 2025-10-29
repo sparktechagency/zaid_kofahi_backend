@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('winners', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
+            $table->string('place');
             $table->integer('player_id');
+            $table->decimal('amount',10,2)->default(0);
             $table->boolean('admin_approval')->default(false);
             $table->string('status')->default('Pending');
             $table->timestamps();

@@ -4,6 +4,7 @@ namespace App\Services\Player;
 
 use App\Models\Event;
 use App\Models\EventMember;
+use App\Models\TeamMember;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -66,7 +67,7 @@ class DiscoverService
 
         return $join;
     }
-    public function teamJoin($id,$team_id)
+    public function teamJoin($id, $team_id)
     {
         $event = Event::where('id', $id)->first();
 
@@ -79,6 +80,17 @@ class DiscoverService
         if ($event->sport_type == 'single') {
             throw ValidationException::withMessages([
                 'message' => 'This event not for team join.',
+            ]);
+        }
+
+        
+
+        if (!($event->number_of_player_required_in_a_team <= TeamMember::where('team_id', $team_id)->count())) {
+
+            $need_members = $event->number_of_player_required_in_a_team - TeamMember::where('team_id', $team_id)->count();
+
+            throw ValidationException::withMessages([
+                'message' => 'Your team does not have enough team members. You need '.$need_members.' more members.',
             ]);
         }
 

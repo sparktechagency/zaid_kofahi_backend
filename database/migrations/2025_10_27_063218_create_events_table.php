@@ -29,6 +29,7 @@ return new class extends Migration {
             $table->string('rules_guidelines');
             $table->string('image');
             $table->enum('status', ['Pending Payment', 'Upcoming', 'Completed'])->default('Pending Payment');
+            $table->unsignedBigInteger('view')->default(0);
             $table->timestamps();
         });
     }

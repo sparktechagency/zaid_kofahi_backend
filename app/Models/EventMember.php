@@ -15,4 +15,9 @@ class EventMember extends Model
     {
         return $this->belongsTo(User::class,'id');
     }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id');
+    }
 }

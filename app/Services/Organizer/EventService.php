@@ -6,11 +6,13 @@ use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Profile;
 use App\Models\Transaction;
+use App\Models\Winner;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class EventService
 {
@@ -107,72 +109,60 @@ class EventService
 
         return false;
     }
-    public function getEventDetails1($id)
-    {
-        $event = Event::where('id', $id)
-            ->select('id', 'title', 'sport_type', 'starting_date', 'ending_date', 'time', 'location', 'prize_amount', 'prize_distribution', 'image')
-            ->first();
-
-        if ($event) {
-            $event->prize_distribution = json_decode($event->prize_distribution);
-            $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
-        }
-
-        if ($event->sport_type == 'single') {
-            $joined_players = EventMember::with([
-                'user' => function ($q) {
-                    $q->select('id', 'full_name', 'user_name', 'avatar');
-                }
-            ])->where('event_id', $id)->get();
-        } else {
-            $joined_teams = EventMember::where('event_id', $id)->get();
-        }
-
-        return [
-            'event' => $event,
-            'join' => count($joined_players),
-            $event->sport_type == 'single' ? 'joined_players' : 'joined_teams' => $event->sport_type == 'single' ? $joined_players : $joined_teams,
-            'top_3_winners' => 'top 3 winners',
-            'event_status' => 'event status'
-        ];
-    }
     public function getEventDetails($id)
     {
-        $event = Event::where('id', $id)
-            ->select('id', 'title', 'sport_type', 'starting_date', 'ending_date', 'time', 'location', 'prize_amount', 'prize_distribution', 'image')
-            ->first();
+        $event = Event::where('id', $id)->first();
 
         if (!$event) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Event not found.'
-            ], 404);
+            throw ValidationException::withMessages([
+                'message' => 'Event not found.',
+            ]);
         }
+
 
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
 
-        $joined_players = [];
-        $joined_teams = [];
 
-        if ($event->sport_type == 'single') {
+        $joined_players = collect();
+        $joined_teams = collect();
+
+        if ($event->sport_type === 'single') {
             $joined_players = EventMember::with([
                 'player' => function ($q) {
                     $q->select('id', 'full_name', 'user_name', 'avatar');
                 }
             ])->where('event_id', $id)->get();
         } else {
-            $joined_teams = EventMember::where('event_id', $id)->get();
+            $joined_teams = EventMember::with([
+                'team' => function ($q) {
+                    $q->select('id', 'name')
+                        ->with(['members.player:id,full_name,user_name,role,avatar']);
+                }
+            ])->where('event_id', $id)->get();
+
+            $joined_teams->each(function ($eventMember) {
+                if ($eventMember->team) {
+                    $eventMember->team->team_member_count = $eventMember->team->members->count();
+                }
+            });
         }
+
+
+        $max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
+        $joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
 
         return [
             'event' => $event,
-            'join' => count($event->sport_type == 'single' ? $joined_players : $joined_teams),
-            // 'joined_players' => $joined_players,
-            // 'joined_teams' => $joined_teams,
-            $event->sport_type == 'single' ? 'joined_players' : 'joined_teams' => $event->sport_type == 'single' ? $joined_players : $joined_teams,
-            'top_3_winners' => 'top 3 winners', 
-            'event_status' => 'event status'
+            'max' => $max,
+            'joined' => $joined,
+            $event->sport_type === 'single' ? 'joined_players' : 'joined_teams' => ($event->sport_type === 'single') ? $joined_players : $joined_teams,
+            'top_3_winners' => Winner::where('event_id', $event->id)->get(),
+            'event_status' => [
+                'players_registered' => $joined . '/' . $max,
+                'prize_amount' => $event->prize_amount,
+                'view' => $event->view
+            ],
         ];
     }
     public function eventPay($data, $id)
@@ -202,5 +192,22 @@ class EventService
         } else {
             return false;
         }
+    }
+
+    public function selectedWinner(array $data)
+    {
+        $match = [
+            'event_id' => $data['event_id'],
+            'place' => $data['place'],
+            'amount' => $data['amount'],
+        ];
+
+        $values = [
+            'player_id' => $data['player_id'],
+        ];
+
+        $winner = Winner::updateOrCreate($match, $values);
+
+        return $winner;
     }
 }

@@ -82,6 +82,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/delete-event/{id?}', [EventController::class, 'deleteEvent']);
         Route::get('/get-event-details/{id?}', [EventController::class, 'getEventDetails']);
         Route::post('/event-pay/{id?}', [EventController::class, 'eventPay']);
+        Route::post('/selected-winner', [EventController::class, 'selectedWinner']);
 
         // trnasaction
         Route::post('/deposit', [TransactionController::class, 'deposit']);

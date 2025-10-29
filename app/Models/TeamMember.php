@@ -15,4 +15,9 @@ class TeamMember extends Model
     {
         return $this->belongsTo(Team::class, 'id');
     }
+    public function player()
+    {
+        return $this->belongsTo(User::class, 'player_id');
+        // যদি column নাম player_id না হয়ে user_id হয় তাহলে 'user_id' দাও
+    }
 }

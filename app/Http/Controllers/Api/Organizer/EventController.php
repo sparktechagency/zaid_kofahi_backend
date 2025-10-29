@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Organizer\CreateEventRequest;
 use App\Http\Requests\Organizer\EditEventRequest;
 use App\Http\Requests\Organizer\EventPayRequest;
+use App\Http\Requests\Organizer\SelectedWinnerRequest;
 use App\Services\Organizer\EventService;
 use Exception;
 use Illuminate\Http\Request;
@@ -94,6 +95,17 @@ class EventController extends Controller
                 return $this->sendResponse([], 'Insufficient balance!', false, 400);
             }
             return $this->sendResponse($event, 'Event payment successfully.', true, 200);
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function selectedWinner(SelectedWinnerRequest $request)
+    {
+        try {
+            $validatedData = $request->validated();
+            $event = $this->eventService->selectedWinner($validatedData);
+            return $this->sendResponse($event, 'Event winner selected successfully.', true, 200);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

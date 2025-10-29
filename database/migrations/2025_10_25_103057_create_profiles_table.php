@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->decimal('total_balance',10,2)->default(0);
-            $table->decimal('available_balance',10,2)->default(0);
+            $table->decimal('total_earning',10,2)->default(0);
             $table->decimal('total_expence',10,2)->default(0);
             $table->decimal('total_withdraw',10,2)->default(0);
+            $table->unsignedBigInteger('total_event_joined')->default(0);
             $table->timestamps();
         });
     }
