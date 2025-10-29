@@ -5,6 +5,7 @@ namespace App\Services\Organizer;
 use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Profile;
+use App\Models\Team;
 use App\Models\Transaction;
 use App\Models\Winner;
 use Carbon\Carbon;
@@ -193,7 +194,6 @@ class EventService
             return false;
         }
     }
-
     public function selectedWinner(array $data)
     {
         $match = [
@@ -209,5 +209,32 @@ class EventService
         $winner = Winner::updateOrCreate($match, $values);
 
         return $winner;
+    }
+
+    public function remove($id)
+    {
+        $event_member = EventMember::where('id', $id)->first();
+
+         if (!$event_member) {
+            throw ValidationException::withMessages([
+                'message' => 'Event member not found.',
+            ]);
+        }
+
+        if ($event_member->player_id == null) {
+            $refund_amount = Event::where('id', $event_member->event_id)->first()->entry_free;
+
+            $team_owner_id = Team::where('id', $event_member->team_id)->first()->player_id;
+
+            Profile::where('user_id', $team_owner_id)->increment('total_balance', $refund_amount);
+
+            $event_member->delete();
+            return true;
+        } else {
+            $refund_amount = Event::where('id', $event_member->event_id)->first()->entry_free;
+            Profile::where('user_id', $event_member->player_id)->increment('total_balance', $refund_amount);
+            $event_member->delete();
+            return true;
+        }
     }
 }
