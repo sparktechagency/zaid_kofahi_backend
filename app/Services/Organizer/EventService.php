@@ -63,12 +63,13 @@ class EventService
             $event->title = $data['title'] ?? $event->title;
             $event->description = $data['description'] ?? $event->description;
             $event->sport_type = $data['sport_type'] ?? $event->sport_type;
-            $event->entry_type = $data['entry_type'] ?? $event->entry_type;
             $event->starting_date = $data['starting_date'] ?? $event->starting_date;
             $event->ending_date = $data['ending_date'] ?? $event->ending_date;
             $event->time = $data['time'] ?? $event->time;
             $event->location = $data['location'] ?? $event->location;
             $event->number_of_player_required = $data['number_of_player_required'] ?? $event->number_of_player_required;
+            $event->number_of_team_required = $data['number_of_team_required'] ?? $event->number_of_team_required;
+            $event->number_of_player_required_in_a_team = $data['number_of_player_required_in_a_team'] ?? $event->number_of_player_required_in_a_team;
             $event->entry_free = $data['entry_free'] ?? $event->entry_free;
             $event->prize_amount = $data['prize_amount'] ?? $event->prize_amount;
             $event->prize_distribution = $data['prize_distribution'] ?? $event->prize_distribution;

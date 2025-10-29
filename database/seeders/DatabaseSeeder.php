@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $admin = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Admin',
             'user_name' => 'admin',
             'email' => 'admin@gmail.com',
@@ -36,12 +35,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $admin->id,
         ]);
 
         $finance = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Finance',
             'user_name' => 'finance',
             'email' => 'finance@gmail.com',
@@ -52,12 +49,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $finance->id,
         ]);
 
         $support = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Support',
             'user_name' => 'support',
             'email' => 'support@gmail.com',
@@ -68,12 +63,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $support->id,
         ]);
 
         $playerOne = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Player one',
             'user_name' => 'player@one',
             'email' => 'player.one@gmail.com',
@@ -84,12 +77,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $playerOne->id,
         ]);
 
         $playerTwo = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Player two',
             'user_name' => 'player@two',
             'email' => 'player.two@gmail.com',
@@ -100,12 +91,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $playerTwo->id,
         ]);
 
         $playerThree = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Player three',
             'user_name' => 'player@three',
             'email' => 'player.three@gmail.com',
@@ -116,12 +105,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $playerThree->id,
         ]);
 
         $organizerOne = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Organizer one',
             'user_name' => 'organizer@one',
             'email' => 'organizer.one@gmail.com',
@@ -132,12 +119,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $organizerOne->id,
         ]);
 
         $organizerTwo = User::create([
-            'slug' => Str::random(),
             'full_name' => 'Organizer two',
             'user_name' => 'organizer@two',
             'email' => 'organizer.two@gmail.com',
@@ -148,7 +133,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Profile::create([
-            'slug' => Str::random(),
             'user_id' => $organizerTwo->id,
         ]);
     }

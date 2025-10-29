@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('event_members', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->integer('player_id')->nullable();
             $table->integer('team_id')->nullable();

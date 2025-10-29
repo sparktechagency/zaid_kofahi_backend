@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('withdraws', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignId('user_id')->constrained('users');
             $table->decimal('amount', 10, 2)->default(0);
             $table->date('date');

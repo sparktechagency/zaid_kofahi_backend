@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->string('full_name');
             $table->string('user_name');
             $table->enum('role', ['ADMIN', 'FINANCE', 'SUPPORT', 'PLAYER', 'ORGANIZER'])->default('PLAYER');

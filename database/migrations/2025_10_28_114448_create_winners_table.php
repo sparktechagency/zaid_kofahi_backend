@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('winners', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->integer('player_id');
             $table->boolean('admin_approval')->default(false);

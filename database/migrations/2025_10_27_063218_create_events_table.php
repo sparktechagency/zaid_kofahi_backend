@@ -12,17 +12,17 @@ return new class extends Migration {
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignId('organizer_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
             $table->text('description');
             $table->string('sport_type');
-            $table->string('entry_type');
             $table->date('starting_date');
             $table->date('ending_date');
             $table->time('time');
             $table->string('location');
             $table->integer('number_of_player_required')->default(0);
+            $table->integer('number_of_team_required')->default(0);
+            $table->integer('number_of_player_required_in_a_team')->default(0);
             $table->decimal('entry_free', 10, 2)->default(0);
             $table->decimal('prize_amount', 10, 2)->default(0);
             $table->json('prize_distribution');

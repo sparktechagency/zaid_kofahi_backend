@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('prize_distributions', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->string('place');
             $table->integer('percentage')->default(0);

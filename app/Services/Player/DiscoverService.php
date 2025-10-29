@@ -6,6 +6,8 @@ use App\Models\Event;
 use App\Models\EventMember;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class DiscoverService
 {
@@ -31,10 +33,21 @@ class DiscoverService
 
     public function singleJoin($id)
     {
+        $alreadyJoined = EventMember::where('event_id', $id)
+            ->where('player_id', Auth::id())
+            ->exists();
+
+        if ($alreadyJoined) {
+            throw ValidationException::withMessages([
+                'message' => 'You are already joined in this event.',
+            ]);
+        }
+
         $join = EventMember::create([
+            'slug' => Str::random(12),
             'player_id' => Auth::id(),
             'event_id' => $id,
-            'joining_date' => Carbon::now()->format('Y-m-d')
+            'joining_date' => Carbon::today(),
         ]);
 
         return $join;

@@ -10,4 +10,9 @@ class PrizeDistribution extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    protected $casts = [
+        'prize_distribution' => 'array',
+    ];
+
 }

@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignId('reported_by')->constrained('users');
             $table->integer('against');
             $table->text('reason');

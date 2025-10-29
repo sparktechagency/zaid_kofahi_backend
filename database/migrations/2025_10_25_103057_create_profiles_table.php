@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->decimal('total_balance',10,2)->default(0);
             $table->decimal('available_balance',10,2)->default(0);
