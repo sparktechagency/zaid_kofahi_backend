@@ -5,6 +5,7 @@ namespace App\Services\Player;
 use App\Models\Team;
 use App\Models\TeamMember;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class MyProfileService
 {
@@ -14,6 +15,14 @@ class MyProfileService
     }
     public function createTeam($data)
     {
+        $max = 2;
+
+        if (Team::where('player_id', Auth::id())->count() == $max) {
+            throw ValidationException::withMessages([
+                'message' => 'You already have ' . $max . ' teams created. You cannot create more than ' . $max . ' teams.',
+            ]);
+        }
+
         $team = Team::create([
             'player_id' => Auth::id(),
             'name' => $data['name'],
