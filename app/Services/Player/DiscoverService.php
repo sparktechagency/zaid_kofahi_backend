@@ -4,6 +4,7 @@ namespace App\Services\Player;
 
 use App\Models\Event;
 use App\Models\EventMember;
+use App\Models\Profile;
 use App\Models\TeamMember;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -59,6 +60,8 @@ class DiscoverService
             ]);
         }
 
+        Profile::where('user_id',Auth::id())->increment('total_event_joined',1);
+
         $join = EventMember::create([
             'player_id' => Auth::id(),
             'event_id' => $id,
@@ -109,6 +112,8 @@ class DiscoverService
                 'message' => 'You are already joined in this event.',
             ]);
         }
+
+        Profile::where('user_id',Auth::id())->increment('total_event_joined',1);
 
         $join = EventMember::create([
             'team_id' => $team_id,

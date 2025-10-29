@@ -210,7 +210,6 @@ class EventService
 
         return $winner;
     }
-
     public function remove($id)
     {
         $event_member = EventMember::where('id', $id)->first();
