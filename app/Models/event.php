@@ -12,18 +12,18 @@ class Event extends Model
 
     protected $guarded = ['id'];
 
-    public static function boot()
-    {
-        parent::boot();
-        static::creating(function ($post) {
-            if (!$post->slug) {
-                $post->slug = Str::slug($post->title);
-            }
-            if (Event::where('slug', $post->slug)->exists()) {
-                $post->slug = $post->slug . '-' . uniqid();
-            }
-        });
-    }
+    // public static function boot()
+    // {
+    //     parent::boot();
+    //     static::creating(function ($post) {
+    //         if (!$post->slug) {
+    //             $post->slug = Str::slug($post->title);
+    //         }
+    //         if (Event::where('slug', $post->slug)->exists()) {
+    //             $post->slug = $post->slug . '-' . uniqid();
+    //         }
+    //     });
+    // }
 
     protected $appends = ['image_url'];
 

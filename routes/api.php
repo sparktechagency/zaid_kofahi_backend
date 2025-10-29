@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Organizer\EventController;
 use App\Http\Controllers\Api\Organizer\TransactionController;
 use App\Http\Controllers\Api\Player\DiscoverController;
+use App\Http\Controllers\Api\Player\MyProfileContrller;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ Route::post('/social-login', [AuthController::class, 'socialLogin']);
 Route::get('pages/{slug?}', [StaticPageController::class, 'show']);
 
 // check token valid
-Route::get('/check-token',[AuthController::class,'checkToken']);
+Route::get('/check-token', [AuthController::class, 'checkToken']);
 
 
 Route::middleware('auth:api')->group(function () {
@@ -44,7 +45,7 @@ Route::middleware('auth:api')->group(function () {
     Route::patch('/read', [NotificationController::class, 'read']);
     Route::patch('/read-all', [NotificationController::class, 'readAll']);
     Route::get('/notification-status', [NotificationController::class, 'status']);
-    
+
 
     Route::middleware('admin')->prefix('admin')->group(function () {
         //
@@ -60,24 +61,31 @@ Route::middleware('auth:api')->group(function () {
 
     Route::middleware('player')->prefix('player')->group(function () {
         //discover
-        Route::get('/get-events',[DiscoverController::class,'getEvents']);
-        Route::post('/single-join/{id?}',[DiscoverController::class,'singleJoin']);
-        Route::post('/team-join/{id?}',[DiscoverController::class,'teamJoin']);
+        Route::get('/get-events', [DiscoverController::class, 'getEvents']);
+        Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
+        Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
+
+        // my profile
+        Route::post('/create-team', [MyProfileContrller::class, 'createTeam']);
+        Route::get('/get-teams', [MyProfileContrller::class, 'getTeams']);
+        Route::get('/view-team/{id}', [MyProfileContrller::class, 'viewTeam']);
+        Route::patch('/edit-team/{id}', [MyProfileContrller::class, 'editTeam']);
+        Route::delete('/delete-team/{id}', [MyProfileContrller::class, 'deleteTeam']);
     });
 
     Route::middleware('organizer')->prefix('organizer')->group(function () {
         // event
-        Route::post('/create-event',[EventController::class,'createEvent']);
-        Route::get('/get-events',[EventController::class,'getEvents']);
-        Route::get('/view-event/{id?}',[EventController::class,'viewEvent']);
-        Route::patch('/edit-event/{id?}',[EventController::class,'editEvent']);
-        Route::delete('/delete-event/{id?}',[EventController::class,'deleteEvent']);
-        Route::get('/get-event-details/{id?}',[EventController::class,'getEventDetails']);
-        Route::post('/event-pay/{id?}',[EventController::class,'eventPay']);
+        Route::post('/create-event', [EventController::class, 'createEvent']);
+        Route::get('/get-events', [EventController::class, 'getEvents']);
+        Route::get('/view-event/{id?}', [EventController::class, 'viewEvent']);
+        Route::patch('/edit-event/{id?}', [EventController::class, 'editEvent']);
+        Route::delete('/delete-event/{id?}', [EventController::class, 'deleteEvent']);
+        Route::get('/get-event-details/{id?}', [EventController::class, 'getEventDetails']);
+        Route::post('/event-pay/{id?}', [EventController::class, 'eventPay']);
 
         // trnasaction
-        Route::post('/deposit',[TransactionController::class,'deposit']);
-        Route::get('/get-transactions',[TransactionController::class,'getTransactions']);
+        Route::post('/deposit', [TransactionController::class, 'deposit']);
+        Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
     });
 
     Route::middleware('player.organizer')->prefix('player-organizer')->group(function () {

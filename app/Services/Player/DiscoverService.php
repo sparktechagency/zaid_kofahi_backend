@@ -11,14 +11,10 @@ use Illuminate\Validation\ValidationException;
 
 class DiscoverService
 {
-    /**
-     * Create a new class instance.
-     */
     public function __construct()
     {
-
+        //
     }
-
     public function getEvents(?int $per_page)
     {
         $events = Event::where('status', '!=', 'Pending Payment')->latest()->paginate($per_page ?? 10);
@@ -30,14 +26,33 @@ class DiscoverService
 
         return $events;
     }
-
     public function singleJoin($id)
     {
-        $alreadyJoined = EventMember::where('event_id', $id)
+        $event = Event::where('id', $id)->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event not found.',
+            ]);
+        }
+
+        if ($event->sport_type == 'team') {
+            throw ValidationException::withMessages([
+                'message' => 'This event not for single join.',
+            ]);
+        }
+
+        if ($event->status == 'Pending Payment') {
+            throw ValidationException::withMessages([
+                'message' => 'Pending payment in this event.',
+            ]);
+        }
+
+        $member = EventMember::where('event_id', $id)
             ->where('player_id', Auth::id())
             ->exists();
 
-        if ($alreadyJoined) {
+        if ($member) {
             throw ValidationException::withMessages([
                 'message' => 'You are already joined in this event.',
             ]);
@@ -45,6 +60,46 @@ class DiscoverService
 
         $join = EventMember::create([
             'player_id' => Auth::id(),
+            'event_id' => $id,
+            'joining_date' => Carbon::today(),
+        ]);
+
+        return $join;
+    }
+    public function teamJoin($id,$team_id)
+    {
+        $event = Event::where('id', $id)->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event not found.',
+            ]);
+        }
+
+        if ($event->sport_type == 'single') {
+            throw ValidationException::withMessages([
+                'message' => 'This event not for team join.',
+            ]);
+        }
+
+        if ($event->status == 'Pending Payment') {
+            throw ValidationException::withMessages([
+                'message' => 'Pending payment in this event.',
+            ]);
+        }
+
+        $member = EventMember::where('event_id', $id)
+            ->where('team_id', $team_id)
+            ->exists();
+
+        if ($member) {
+            throw ValidationException::withMessages([
+                'message' => 'You are already joined in this event.',
+            ]);
+        }
+
+        $join = EventMember::create([
+            'team_id' => $team_id,
             'event_id' => $id,
             'joining_date' => Carbon::today(),
         ]);

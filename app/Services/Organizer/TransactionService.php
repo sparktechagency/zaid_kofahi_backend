@@ -11,14 +11,10 @@ use Illuminate\Support\Str;
 
 class TransactionService
 {
-    /**
-     * Create a new class instance.
-     */
     public function __construct()
     {
         //
     }
-
     public function deposit($data)
     {
         $profile = Profile::where('user_id', Auth::id())->first();
@@ -35,9 +31,7 @@ class TransactionService
         ]);
 
         return $transaction;
-
     }
-
     public function getTransactions(?int $per_page)
     {
         $transactions = Transaction::where('user_id', Auth::id())->latest()->paginate($per_page ?? 10);
@@ -60,5 +54,4 @@ class TransactionService
             'transactions_histories' => $transactions
         ];
     }
-
 }

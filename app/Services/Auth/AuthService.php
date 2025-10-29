@@ -20,7 +20,6 @@ class AuthService
     {
         //
     }
-
     public function register(array $data): User
     {
         $otp = rand(100000, 999999);

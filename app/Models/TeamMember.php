@@ -10,4 +10,9 @@ class TeamMember extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'id');
+    }
 }

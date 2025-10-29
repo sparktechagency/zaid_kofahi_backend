@@ -14,9 +14,6 @@ use Illuminate\Support\Str;
 
 class EventService
 {
-    /**
-     * Create a new class instance.
-     */
     public function __construct()
     {
         //
@@ -110,10 +107,10 @@ class EventService
 
         return false;
     }
-    public function getEventDetails($id)
+    public function getEventDetails1($id)
     {
         $event = Event::where('id', $id)
-            ->select('id', 'slug', 'title', 'starting_date', 'ending_date', 'time', 'location', 'prize_amount', 'prize_distribution', 'image')
+            ->select('id', 'title', 'sport_type', 'starting_date', 'ending_date', 'time', 'location', 'prize_amount', 'prize_distribution', 'image')
             ->first();
 
         if ($event) {
@@ -121,15 +118,60 @@ class EventService
             $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
         }
 
-        $joined_players = EventMember::with(['user' => function($q){
-            $q->select('id','slug','full_name','user_name','avatar');
-        }])->where('event_id',$id)->get();
+        if ($event->sport_type == 'single') {
+            $joined_players = EventMember::with([
+                'user' => function ($q) {
+                    $q->select('id', 'full_name', 'user_name', 'avatar');
+                }
+            ])->where('event_id', $id)->get();
+        } else {
+            $joined_teams = EventMember::where('event_id', $id)->get();
+        }
 
         return [
             'event' => $event,
             'join' => count($joined_players),
-            'joined_players' => $joined_players,
+            $event->sport_type == 'single' ? 'joined_players' : 'joined_teams' => $event->sport_type == 'single' ? $joined_players : $joined_teams,
             'top_3_winners' => 'top 3 winners',
+            'event_status' => 'event status'
+        ];
+    }
+    public function getEventDetails($id)
+    {
+        $event = Event::where('id', $id)
+            ->select('id', 'title', 'sport_type', 'starting_date', 'ending_date', 'time', 'location', 'prize_amount', 'prize_distribution', 'image')
+            ->first();
+
+        if (!$event) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Event not found.'
+            ], 404);
+        }
+
+        $event->prize_distribution = json_decode($event->prize_distribution);
+        $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+
+        $joined_players = [];
+        $joined_teams = [];
+
+        if ($event->sport_type == 'single') {
+            $joined_players = EventMember::with([
+                'player' => function ($q) {
+                    $q->select('id', 'full_name', 'user_name', 'avatar');
+                }
+            ])->where('event_id', $id)->get();
+        } else {
+            $joined_teams = EventMember::where('event_id', $id)->get();
+        }
+
+        return [
+            'event' => $event,
+            'join' => count($event->sport_type == 'single' ? $joined_players : $joined_teams),
+            // 'joined_players' => $joined_players,
+            // 'joined_teams' => $joined_teams,
+            $event->sport_type == 'single' ? 'joined_players' : 'joined_teams' => $event->sport_type == 'single' ? $joined_players : $joined_teams,
+            'top_3_winners' => 'top 3 winners', 
             'event_status' => 'event status'
         ];
     }
@@ -142,9 +184,7 @@ class EventService
         if ($available_balance >= $data['amount']) {
             $profile->increment('total_expence', $data['amount']);
 
-            $event = Event::where('id', $id)
-                ->orWhere('slug', $id)
-                ->first();
+            $event = Event::where('id', $id)->first();
 
             $event->status = 'Upcoming';
             $event->save();

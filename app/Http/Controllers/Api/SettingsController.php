@@ -10,13 +10,11 @@ use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
-
     protected $settingsService;
     public function __construct(SettingsService $settingsService)
     {
         $this->settingsService = $settingsService;
     }
-
     public function editProfile(SettingsRequest $request)
     {
         try {

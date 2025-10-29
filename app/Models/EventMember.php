@@ -11,7 +11,7 @@ class EventMember extends Model
 
     protected $guarded = ['id'];
 
-    public function user()
+    public function player()
     {
         return $this->belongsTo(User::class,'id');
     }
