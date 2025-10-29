@@ -26,7 +26,6 @@ class TransactionService
         $profile->increment('total_balance', $data['amount']);
 
         $transaction = Transaction::create([
-            'slug' => Str::random(),
             'user_id' => Auth::id(),
             'event_id' => $data['event_id'],
             'type' => 'Deposit',

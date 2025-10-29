@@ -36,13 +36,11 @@ class EventService
     }
     public function updateEvent($id, $data)
     {
-        $event = Event::where('slug', $id)
-            ->orWhere('id', $id)
+        $event = Event::where('id', $id)
             ->first();
 
         if ($event) {
-            $event = Event::where('slug', $id)
-                ->orWhere('id', $id)
+            $event = Event::where('id', $id)
                 ->first();
 
             if (!$event) {
@@ -92,8 +90,7 @@ class EventService
     }
     public function viewEvent($id)
     {
-        $event = Event::where('slug', $id)
-            ->orWhere('id', $id)
+        $event = Event::where('id', $id)
             ->first();
 
         $event->prize_distribution = json_decode($event->prize_distribution);
@@ -103,8 +100,7 @@ class EventService
     }
     public function deleteEvent($id)
     {
-        $event = Event::where('slug', $id)
-            ->orWhere('id', $id)
+        $event = Event::where('id', $id)
             ->first();
 
         if ($event && $event->status == 'Pending Payment') {
@@ -116,8 +112,7 @@ class EventService
     }
     public function getEventDetails($id)
     {
-        $event = Event::where('slug', $id)
-            ->orWhere('id', $id)
+        $event = Event::where('id', $id)
             ->select('id', 'slug', 'title', 'starting_date', 'ending_date', 'time', 'location', 'prize_amount', 'prize_distribution', 'image')
             ->first();
 
@@ -155,7 +150,6 @@ class EventService
             $event->save();
 
             $transaction = Transaction::create([
-                'slug' => Str::random(),
                 'user_id' => Auth::id(),
                 'event_id' => $event->id,
                 'type' => 'Payout',

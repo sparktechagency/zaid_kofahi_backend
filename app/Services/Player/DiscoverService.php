@@ -44,7 +44,6 @@ class DiscoverService
         }
 
         $join = EventMember::create([
-            'slug' => Str::random(12),
             'player_id' => Auth::id(),
             'event_id' => $id,
             'joining_date' => Carbon::today(),
