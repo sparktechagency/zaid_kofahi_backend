@@ -41,4 +41,28 @@ class DiscoverController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+    public function viewEvent($id)
+    {
+        try {
+            $event = $this->discoverService->viewEvent($id);
+            if (!$event) {
+                return $this->sendError('Event not found.', [], 404);
+            }
+            return $this->sendResponse($event, 'Event successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+    public function getEventDetails($id)
+    {
+        try {
+            $event = $this->discoverService->getEventDetails($id);
+            if (!$event) {
+                return $this->sendError('Event not found.', [], 404);
+            }
+            return $this->sendResponse($event, 'Event details successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
 }

@@ -3,11 +3,11 @@
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Organizer\EventController;
-use App\Http\Controllers\Api\Organizer\TransactionController;
 use App\Http\Controllers\Api\Player\DiscoverController;
 use App\Http\Controllers\Api\Player\MyProfileContrller;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
+use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +40,11 @@ Route::middleware('auth:api')->group(function () {
     // static page update
     Route::post('pages/{slug?}', [StaticPageController::class, 'update']);
 
+    // trnasaction
+    Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
+    Route::post('/deposit', [TransactionController::class, 'deposit']);
+    Route::post('/withdraw', [TransactionController::class, 'withdraw']);
+
     // notification
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']);
     Route::patch('/read', [NotificationController::class, 'read']);
@@ -62,12 +67,10 @@ Route::middleware('auth:api')->group(function () {
     Route::middleware('player')->prefix('player')->group(function () {
         //discover
         Route::get('/get-events', [DiscoverController::class, 'getEvents']);
+        Route::get('/view-event/{id?}', [DiscoverController::class, 'viewEvent']);
+        Route::get('/get-event-details/{id?}', [DiscoverController::class, 'getEventDetails']);
         Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
         Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
-
-         // trnasaction
-        Route::post('/deposit', [TransactionController::class, 'deposit']);
-        Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
 
         // my profile
         Route::post('/create-team', [MyProfileContrller::class, 'createTeam']);
@@ -88,10 +91,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/event-pay/{id?}', [EventController::class, 'eventPay']);
         Route::post('/selected-winner', [EventController::class, 'selectedWinner']);
         Route::delete('/remove-event-member/{id?}', [EventController::class, 'remove']);
-
-        // trnasaction
-        Route::post('/deposit', [TransactionController::class, 'deposit']);
-        Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
+        Route::get('/get-event-members-lists/{id?}', [EventController::class, 'getEventMembersLists']);
     });
 
     Route::middleware('player.organizer')->prefix('player-organizer')->group(function () {

@@ -23,7 +23,8 @@ class SelectedWinnerRequest extends FormRequest
     {
         return [
             'event_id' => 'required|exists:events,id',
-            'player_id' => 'required|exists:users,id',
+            'player_id' => 'nullable|exists:users,id',
+            'team_id' => 'nullable|exists:teams,id',
             'place' => 'required|string|in:1st,2nd,3rd',
             'amount' => 'required|numeric|min:0',
         ];

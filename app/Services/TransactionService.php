@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Organizer;
+namespace App\Services;
 
 use App\Models\Event;
 use App\Models\Profile;
@@ -47,7 +47,7 @@ class TransactionService
         }
 
         $profile = Profile::where('user_id', Auth::id())->first();
-        $available_balance = $profile->total_balance - ($profile->total_expence + $profile->total_withdraw);
+        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
 
         return [
             'available_balance' => $available_balance,

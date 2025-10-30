@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->string('place');
-            $table->integer('player_id');
+            $table->integer('player_id')->nullable();
+            $table->integer('team_id')->nullable();
             $table->decimal('amount',10,2)->default(0);
             $table->boolean('admin_approval')->default(false);
             $table->string('status')->default('Pending');

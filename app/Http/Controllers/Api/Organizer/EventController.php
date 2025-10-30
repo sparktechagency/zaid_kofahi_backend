@@ -122,4 +122,13 @@ class EventController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+    public function getEventMembersLists($id)
+    {
+        try {
+            $members = $this->eventService->getEventMembersLists($id);
+            return $this->sendResponse($members, 'Event members successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
 }

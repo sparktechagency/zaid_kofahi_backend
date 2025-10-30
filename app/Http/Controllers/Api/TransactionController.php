@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Organizer;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organizer\DepositRequest;
-use App\Services\Organizer\TransactionService;
+use App\Services\TransactionService;
 use Exception;
 use Illuminate\Http\Request;
 

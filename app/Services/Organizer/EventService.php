@@ -202,9 +202,12 @@ class EventService
             'amount' => $data['amount'],
         ];
 
+
         $values = [
-            'player_id' => $data['player_id'],
+            'player_id' => $data['player_id'] ?? null,
+            'team_id' => $data['team_id'] ?? null,
         ];
+
 
         $winner = Winner::updateOrCreate($match, $values);
 
@@ -214,7 +217,7 @@ class EventService
     {
         $event_member = EventMember::where('id', $id)->first();
 
-         if (!$event_member) {
+        if (!$event_member) {
             throw ValidationException::withMessages([
                 'message' => 'Event member not found.',
             ]);
@@ -235,5 +238,29 @@ class EventService
             $event_member->delete();
             return true;
         }
+    }
+    public function getEventMembersLists($id)
+    {
+        $event = Event::where('id', $id)->first();
+
+        if ($event->sport_type == 'single') {
+            $event_members = EventMember::with([
+                'player' => function ($q) {
+                    $q->select('id', 'full_name', 'user_name', 'role', 'avatar');
+                }
+            ])
+                ->where('event_id', $id)
+                ->get();
+        } else {
+            $event_members = EventMember::with([
+                'team' => function ($q) {
+                    $q->select('id', 'name')
+                        ->with(['members.player:id,full_name,user_name,role,avatar']);
+                }
+            ])->where('event_id', $id)->get();
+        }
+
+        return $event_members;
+
     }
 }
