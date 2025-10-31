@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->integer('event_id');
+            $table->integer('event_id')->nullable();
             $table->enum('type',['Deposit','Entry Free','Platform Free','Withdraw','Payout','Refund','Earning','Winning']);
             $table->decimal('amount',10,2)->default(0);
             $table->timestamp('date');

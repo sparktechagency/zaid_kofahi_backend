@@ -1,10 +1,19 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\BranchController;
+use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\DisputeController;
+use App\Http\Controllers\Api\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Api\Admin\TeamController;
+use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Organizer\EventController;
+use App\Http\Controllers\Api\Organizer\PerformanceController;
 use App\Http\Controllers\Api\Player\DiscoverController;
-use App\Http\Controllers\Api\Player\MyProfileContrller;
+use App\Http\Controllers\Api\Player\LeaderboardController;
+use App\Http\Controllers\Api\Player\NearMeController;
+use App\Http\Controllers\Api\ProfileContrller;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
 use App\Http\Controllers\Api\TransactionController;
@@ -44,16 +53,40 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
     Route::post('/deposit', [TransactionController::class, 'deposit']);
     Route::post('/withdraw', [TransactionController::class, 'withdraw']);
-
+    
     // notification
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']);
     Route::patch('/read', [NotificationController::class, 'read']);
     Route::patch('/read-all', [NotificationController::class, 'readAll']);
     Route::get('/notification-status', [NotificationController::class, 'status']);
-
-
+    
+    
     Route::middleware('admin')->prefix('admin')->group(function () {
-        //
+        // dashboard
+        Route::get('/dashboard-info', [DashboardController::class, 'dashboardInfo']);
+        
+        // dashboard
+        Route::get('/get-users', [UserController::class, 'getUsers']);
+        
+        // dashboard
+        Route::get('/get-events', [AdminEventController::class, 'getEvents']);
+        
+        // dashboard
+        Route::get('/get-teams', [TeamController::class, 'getTeams']);
+        
+        // branch management
+        Route::get('/get-branches', [BranchController::class, 'getBranches']);
+        Route::post('/create-branch', [BranchController::class, 'createBranch']);
+        Route::get('/view-branch/{id?}', [BranchController::class, 'viewBranch']);
+        Route::patch('/edit-branch/{id?}', [BranchController::class, 'editBranch']);
+        Route::delete('/delete-branch/{id?}', [BranchController::class, 'deleteBranch']);
+        
+        // transaction
+        Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
+        
+        // disputes
+        Route::get('/get-disputes', [DisputeController::class, 'getDisputes']);
+        Route::patch('/report-solve/{id?}', [DisputeController::class, 'reportSolve']);
     });
 
     Route::middleware('finance')->prefix('finance')->group(function () {
@@ -65,19 +98,27 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::middleware('player')->prefix('player')->group(function () {
-        //discover
+        // discover
         Route::get('/get-events', [DiscoverController::class, 'getEvents']);
         Route::get('/view-event/{id?}', [DiscoverController::class, 'viewEvent']);
         Route::get('/get-event-details/{id?}', [DiscoverController::class, 'getEventDetails']);
         Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
         Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
 
-        // my profile
-        Route::post('/create-team', [MyProfileContrller::class, 'createTeam']);
-        Route::get('/get-teams', [MyProfileContrller::class, 'getTeams']);
-        Route::get('/view-team/{id}', [MyProfileContrller::class, 'viewTeam']);
-        Route::patch('/edit-team/{id}', [MyProfileContrller::class, 'editTeam']);
-        Route::delete('/delete-team/{id}', [MyProfileContrller::class, 'deleteTeam']);
+        // near me event
+        Route::get('/near-me-events', [NearMeController::class, 'nearMeEvents']);
+
+        // leaderboard info
+        Route::get('/leaderboard-info', [LeaderboardController::class, 'leaderboardInfo']);
+
+        // profile
+        Route::post('/create-team', [ProfileContrller::class, 'createTeam']);
+        Route::get('/get-teams', [ProfileContrller::class, 'getTeams']);
+        Route::get('/view-team/{id}', [ProfileContrller::class, 'viewTeam']);
+        Route::patch('/edit-team/{id}', [ProfileContrller::class, 'editTeam']);
+        Route::delete('/delete-team/{id}', [ProfileContrller::class, 'deleteTeam']);
+        Route::get('/player-profile-info', [ProfileContrller::class, 'playerProfileInfo']);
+        Route::post('/create-report', [ProfileContrller::class, 'createReport']);
     });
 
     Route::middleware('organizer')->prefix('organizer')->group(function () {
@@ -92,6 +133,12 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/selected-winner', [EventController::class, 'selectedWinner']);
         Route::delete('/remove-event-member/{id?}', [EventController::class, 'remove']);
         Route::get('/get-event-members-lists/{id?}', [EventController::class, 'getEventMembersLists']);
+
+        // performance info
+        Route::get('/performance-info', [PerformanceController::class, 'performanceInfo']);
+
+        // profile
+        Route::get('/organizer-profile-info', [ProfileContrller::class, 'organizerProfileInfo']);
     });
 
     Route::middleware('player.organizer')->prefix('player-organizer')->group(function () {

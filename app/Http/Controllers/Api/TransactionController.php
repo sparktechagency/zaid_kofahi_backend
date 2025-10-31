@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organizer\DepositRequest;
+use App\Http\Requests\WithdrawRequest;
 use App\Services\TransactionService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -29,7 +31,28 @@ class TransactionController extends Controller
     {
         try {
             $events = $this->transactionService->getTransactions($request->per_page);
-            return $this->sendResponse($events, 'Your all transactions successfully retrieved.');
+            return $this->sendResponse($events, in_array(Auth::user()->role, ['ADMIN']) ? 'All withdraws and transactions successfully retrieved.' : 'Your all transactions successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function withdraw(WithdrawRequest $request)
+    {
+        try {
+            $validatedData = $request->validated();
+            $transaction = $this->transactionService->withdraw($validatedData);
+            return $this->sendResponse($transaction, 'Withdraw request to admin successfully.', true, 201);
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function requestAccept($id)
+    {
+        try {
+            $transaction = $this->transactionService->requestAccept($id);
+            return $this->sendResponse($transaction, 'Withdraw request accepted successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

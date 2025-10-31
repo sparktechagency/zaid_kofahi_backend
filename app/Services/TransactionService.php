@@ -5,9 +5,11 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\Profile;
 use App\Models\Transaction;
+use App\Models\Withdraw;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class TransactionService
 {
@@ -34,6 +36,16 @@ class TransactionService
     }
     public function getTransactions(?int $per_page)
     {
+
+        if (in_array(Auth::user()->role, ['ADMIN'])) {
+            $transactions = Transaction::latest()->paginate($per_page ?? 10);
+            $withdraws = Withdraw::latest()->paginate($per_page ?? 10);
+            return [
+                'withdraw_histories' => $withdraws,
+                'transactions_histories' => $transactions
+            ];
+        }
+
         $transactions = Transaction::where('user_id', Auth::id())->latest()->paginate($per_page ?? 10);
 
         foreach ($transactions as $transaction) {
@@ -53,5 +65,46 @@ class TransactionService
             'available_balance' => $available_balance,
             'transactions_histories' => $transactions
         ];
+    }
+
+    public function withdraw($data)
+    {
+        $withdraw = Withdraw::create([
+            'user_id' => Auth::id(),
+            'amount' => $data['amount'],
+            'date' => Carbon::now()->format('Y-m-d'),
+            'status' => 'Pending',
+        ]);
+
+        return $withdraw;
+    }
+
+    public function requestAccept($id)
+    {
+        $withdraw = Withdraw::where('id', $id)->first();
+
+        if ($withdraw->status == 'Completed') {
+            throw ValidationException::withMessages([
+                'message' => 'Your are already withdraw request accepted.',
+            ]);
+        }
+
+        $profile = Profile::where('user_id', $withdraw->user_id)->first();
+
+        $profile->increment('total_withdraw', $withdraw->amount);
+
+        $withdraw->status = 'Completed';
+        $withdraw->save();
+
+        $transaction = Transaction::create([
+            'user_id' => $withdraw->user_id,
+            'event_id' => $data['event_id'] ?? null,
+            'type' => 'Withdraw',
+            'amount' => $withdraw->amount,
+            'data' => Carbon::now()->format('Y-m-d'),
+            'status' => 'Completed',
+        ]);
+
+        return $transaction;
     }
 }

@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Services\Player;
+namespace App\Services;
 
+use App\Models\Report;
 use App\Models\Team;
 use App\Models\TeamMember;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
-class MyProfileService
+class ProfileService
 {
     public function __construct()
     {
@@ -59,4 +61,47 @@ class MyProfileService
         $team = Team::findOrFail($id);
         return $team->delete();
     }
+
+    public function organizerProfileInfo()
+    {
+        return [
+            'user_info' => User::with('profile')->where('id',Auth::id())->first(),
+            'follower_info' => [
+                'followings' => 10,
+                'followers' => 4
+            ],
+            'events_status' => [
+                'total_events' => 1,
+                'completed' => 4,
+                'upcoming' => 7,
+                'canceled' => 0
+            ],
+            'recent_events' => 'recent_events',
+        ];
+    }
+
+    public function playerProfileInfo()
+    {
+         return [
+            'user_info' => User::with('profile')->where('id',Auth::id())->first(),
+            'follower_info' => [
+                'followings' => '1.2k',
+                'followers' => '2.2k'
+            ],
+            'events_status' => [
+                'events_joined' => '12',
+                'total_winnings' => '$850',
+                'top_rank' => '#3'
+            ],
+        ];
+    }
+
+    public function createReport($data)
+    {
+
+        $data['reported_by'] = Auth::id();
+
+         return Report::create($data);
+    }
+
 }
