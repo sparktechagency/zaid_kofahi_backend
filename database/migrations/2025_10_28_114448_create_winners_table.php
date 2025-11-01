@@ -18,8 +18,9 @@ return new class extends Migration
             $table->unsignedInteger('player_id')->nullable();
             $table->unsignedInteger('team_id')->nullable();
             $table->decimal('amount',10,2)->default(0);
+            $table->string('additional_prize')->nullable();
             $table->boolean('admin_approval')->default(false);
-            $table->enum('status',['Pending','Accepted'])->default('Pending');
+            $table->enum('status',['Pending','Accepted','Decline'])->default('Pending');
             $table->timestamps();
         });
     }
@@ -32,3 +33,6 @@ return new class extends Migration
         Schema::dropIfExists('winners');
     }
 };
+
+
+

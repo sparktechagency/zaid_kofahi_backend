@@ -132,7 +132,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/delete-event/{id?}', [EventController::class, 'deleteEvent']);
         Route::get('/get-event-details/{id?}', [EventController::class, 'getEventDetails']);
         Route::post('/event-pay/{id?}', [EventController::class, 'eventPay']);
-        Route::post('/selected-winner', [EventController::class, 'selectedWinner']);
+        Route::post('/selected-winner/{id?}', [EventController::class, 'selectedWinner']);
         Route::delete('/remove-event-member/{id?}', [EventController::class, 'remove']);
         Route::get('/get-event-members-lists/{id?}', [EventController::class, 'getEventMembersLists']);
 

@@ -19,7 +19,6 @@ class UserService
     {
         $query = User::query();
 
-        // 🧩 Filter by role (PLAYER / ORGANIZER)
         if (!empty($filter)) {
             $query->where('role', $filter);
         } else {

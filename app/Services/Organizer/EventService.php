@@ -194,25 +194,43 @@ class EventService
             return false;
         }
     }
-    public function selectedWinner(array $data)
+    public function selectedWinner($data, $id)
     {
-        $match = [
-            'event_id' => $data['event_id'],
-            'place' => $data['place'],
-            'amount' => $data['amount'],
-        ];
 
+        $event = Event::where('id', $id)->first();
 
-        $values = [
-            'player_id' => $data['player_id'] ?? null,
-            'team_id' => $data['team_id'] ?? null,
-        ];
+        if($event->status == 'Awaiting Confirmation'){
+            throw ValidationException::withMessages([
+                'message' => 'You has already selected the winner.',
+            ]);
+        }
 
+        // if ($event->status == 'Event Over') {
+            $data = is_string($data) ? json_decode($data, true) : $data;
+            $winners = [];
+            foreach ($data as $item) {
+                $winners[] = Winner::create([
+                    'event_id' => $id,
+                    'place' => $item['place'],
+                    'player_id' => $item['player_id'],
+                    'team_id' => $item['team_id'] ?? null,
+                    'amount' => $item['amount'],
+                    'additional_prize' => $item['additional_prize'] ?? null,
+                ]);
+            }
 
-        $winner = Winner::updateOrCreate($match, $values);
+            $event->status = 'Awaiting Confirmation';
+            $event->save();
 
-        return $winner;
+            return $winners;
+        // } else {
+        //     throw ValidationException::withMessages([
+        //         'message' => 'Wait until the this event are over.',
+        //     ]);
+        // }
     }
+
+
     public function remove($id)
     {
         $event_member = EventMember::where('id', $id)->first();
