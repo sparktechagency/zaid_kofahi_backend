@@ -15,11 +15,26 @@ class UserService
         //
     }
 
-    public function getUsers()
+    public function getUsers(?string $search , ?string $filter)
     {
         $query = User::query();
-        $query->whereIn('role', ['PLAYER', 'ORGANIZER']);
-        return $query->get();
+
+        // 🧩 Filter by role (PLAYER / ORGANIZER)
+        if (!empty($filter)) {
+            $query->where('role', $filter);
+        } else {
+            $query->whereIn('role', ['PLAYER', 'ORGANIZER']);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('user_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->latest()->get();
     }
     public function viewUser($id)
     {
@@ -27,7 +42,7 @@ class UserService
     }
     public function blockUnblockToggle($id)
     {
-        $user = User::where('id', $id)->whereIn('role',['PLAYER','ORGANIZER'])->first();
+        $user = User::where('id', $id)->whereIn('role', ['PLAYER', 'ORGANIZER'])->first();
 
         if (!$user) {
             throw ValidationException::withMessages([

@@ -14,10 +14,10 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
-     public function getUsers()
+     public function getUsers(Request $request)
     {
         try {
-            $members = $this->userService->getUsers();
+            $members = $this->userService->getUsers($request->search,$request->filter);
             return $this->sendResponse($members, 'Get users successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
