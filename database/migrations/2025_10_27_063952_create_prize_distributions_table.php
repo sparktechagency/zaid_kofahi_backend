@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->string('place');
-            $table->integer('percentage')->default(0);
+            $table->unsignedInteger('percentage')->default(0);
             $table->string('additional_prize');
             $table->decimal('percentage_amount',10,2)->default(0);
             $table->timestamps();

@@ -67,6 +67,8 @@ Route::middleware('auth:api')->group(function () {
         
         // dashboard
         Route::get('/get-users', [UserController::class, 'getUsers']);
+        Route::get('/view-user/{id?}', [UserController::class, 'viewUser']);
+        Route::patch('/block-unblock-toggle/{id?}', [UserController::class, 'blockUnblockToggle']);
         
         // dashboard
         Route::get('/get-events', [AdminEventController::class, 'getEvents']);

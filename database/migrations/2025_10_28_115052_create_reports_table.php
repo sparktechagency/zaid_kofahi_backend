@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('reported_by')->constrained('users');
-            $table->integer('against');
+            $table->unsignedInteger('against');
             $table->text('reason');
             $table->enum('status',['Pending','Solved'])->default('Pending');
             $table->timestamps();

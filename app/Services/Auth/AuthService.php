@@ -62,6 +62,10 @@ class AuthService
             return ['success' => false, 'message' => 'Your account is inactive. Please verify your account.', 'code' => 403];
         }
 
+        if ($user->status == 'Suspended') {
+            return ['success' => false, 'message' => 'Your account is suspended. Please contact help center.', 'code' => 403];
+        }
+
         if ($user->role != $data['role']) {
             return [
                 'success' => false,

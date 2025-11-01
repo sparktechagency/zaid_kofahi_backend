@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('follows', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->integer('follower_id');
+            $table->unsignedInteger('follower_id');
             $table->timestamps();
         });
     }

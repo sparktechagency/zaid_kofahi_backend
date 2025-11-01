@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('event_members', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
-            $table->integer('player_id')->nullable();
-            $table->integer('team_id')->nullable();
+            $table->unsignedInteger('player_id')->nullable();
+            $table->unsignedInteger('team_id')->nullable();
             $table->date('joining_date');
             $table->timestamps();
         });

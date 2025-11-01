@@ -23,4 +23,24 @@ class UserController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+
+     public function viewUser($id)
+    {
+        try {
+            $members = $this->userService->viewUser($id);
+            return $this->sendResponse($members, 'Get users successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+     public function blockUnblockToggle($id)
+    {
+        try {
+            $members = $this->userService->blockUnblockToggle($id);
+            return $this->sendResponse($members, 'Block unblock toggle successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
 }

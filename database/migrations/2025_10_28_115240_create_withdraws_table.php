@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users');
             $table->decimal('amount', 10, 2)->default(0);
             $table->date('date');
-            $table->string('status')->default('Pending');
+            $table->enum('status',['Pending','Completed'])->default('Pending');
             $table->timestamps();
         });
     }
