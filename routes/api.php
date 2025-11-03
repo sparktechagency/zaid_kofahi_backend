@@ -65,15 +65,20 @@ Route::middleware('auth:api')->group(function () {
         // dashboard
         Route::get('/dashboard-info', [DashboardController::class, 'dashboardInfo']);
         
-        // dashboard
+        // user
         Route::get('/get-users', [UserController::class, 'getUsers']);
         Route::get('/view-user/{id?}', [UserController::class, 'viewUser']);
         Route::patch('/block-unblock-toggle/{id?}', [UserController::class, 'blockUnblockToggle']);
         
-        // dashboard
+        // event
         Route::get('/get-events', [AdminEventController::class, 'getEvents']);
+        Route::get('/view-event/{id?}', [AdminEventController::class, 'viewEvent']);
+        Route::get('/get-winners/{id?}', [AdminEventController::class, 'getWinners']);
+        Route::patch('/accept-winner/{id?}', [AdminEventController::class, 'acceptWinner']);
+        Route::patch('/decline-winner/{id?}', [AdminEventController::class, 'declineWinner']);
+        Route::post('/prize-distribution/{id?}', [AdminEventController::class, 'prizeDistribution']);
         
-        // dashboard
+        // team
         Route::get('/get-teams', [TeamController::class, 'getTeams']);
         
         // branch management

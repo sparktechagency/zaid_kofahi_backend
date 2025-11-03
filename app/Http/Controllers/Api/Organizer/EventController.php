@@ -101,14 +101,14 @@ class EventController extends Controller
     }
 
     public function selectedWinner(Request $request, $id)
-{
-    try {
-        $event = $this->eventService->selectedWinner($request->winners, $id);
-        return $this->sendResponse($event, 'Event winner(s) selected successfully.', true, 200);
-    } catch (Exception $e) {
-        return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+    {
+        try {
+            $event = $this->eventService->selectedWinner($request->winners, $id);
+            return $this->sendResponse($event, 'Event winner(s) selected successfully.', true, 200);
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
     }
-}
 
     public function remove($id)
     {
