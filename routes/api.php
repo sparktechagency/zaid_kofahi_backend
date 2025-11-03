@@ -80,6 +80,7 @@ Route::middleware('auth:api')->group(function () {
         
         // team
         Route::get('/get-teams', [TeamController::class, 'getTeams']);
+        Route::get('/view-team/{id?}', [TeamController::class, 'viewTeam']);
         
         // branch management
         Route::get('/get-branches', [BranchController::class, 'getBranches']);

@@ -23,4 +23,17 @@ class TeamController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function viewTeam($id)
+    {
+        try {
+            $event = $this->teamService->viewTeam($id);
+            if (!$event) {
+                return $this->sendError('Event not found.', [], 404);
+            }
+            return $this->sendResponse($event, 'Event successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
 }

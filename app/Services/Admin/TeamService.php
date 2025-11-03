@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Models\Team;
+use Carbon\Carbon;
 
 class TeamService
 {
@@ -17,5 +18,14 @@ class TeamService
     public function getTeams()
     {
         return Team::with('members')->get();
+    }
+
+    public function viewTeam($id)
+    {
+        $event = Team::with('members')
+            ->where('id', $id)
+            ->first();
+
+        return $event;
     }
 }
