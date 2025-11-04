@@ -27,7 +27,7 @@ class DiscoverController extends Controller
     public function singleJoin(Request $request, $id)
     {
         try {
-            $event = $this->discoverService->singleJoin($id);
+            $event = $this->discoverService->singleJoin($request->player_id,$id);
             return $this->sendResponse($event, 'Single join successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

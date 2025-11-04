@@ -19,8 +19,8 @@ class LeaderBoardController extends Controller
     public function leaderBoardInfo()
     {
         try {
-            $event = $this->leadBoardService->leaderBoardInfo();
-            return $this->sendResponse($event, 'Leader board information successfully retrieved.');
+            $result = $this->leadBoardService->leaderBoardInfo();
+            return $this->sendResponse($result, 'Leader board information successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

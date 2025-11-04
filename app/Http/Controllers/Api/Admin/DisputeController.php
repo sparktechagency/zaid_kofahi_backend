@@ -17,8 +17,8 @@ class DisputeController extends Controller
      public function getDisputes()
     {
         try {
-            $members = $this->disputeService->getDisputes();
-            return $this->sendResponse($members, 'Get disputes successfully retrieved.');
+            $result = $this->disputeService->getDisputes();
+            return $this->sendResponse($result, 'Get disputes successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -27,8 +27,8 @@ class DisputeController extends Controller
     public function reportSolve($id)
     {
         try {
-            $transaction = $this->disputeService->reportSolve($id);
-            return $this->sendResponse($transaction, 'Player report solved successfully.', true, 201);
+            $result = $this->disputeService->reportSolve($id);
+            return $this->sendResponse($result, 'Player report solved successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

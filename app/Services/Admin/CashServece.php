@@ -16,22 +16,27 @@ class CashServece
     }
     public function getCashRequests()
     {
-        $cashes = Cash::with(['player'=> function($q){
-            $q->select('id','full_name');
-        },'team.player'=>function($q){
-            $q->select('id','full_name');
-        },'event'=>function($q){
-            $q->select('id','title','sport_type');
-        },'branch'])->latest()->get();
+        $cashes = Cash::with([
+            'player' => function ($q) {
+                $q->select('id', 'full_name');
+            },
+            'team.player' => function ($q) {
+                $q->select('id', 'full_name');
+            },
+            'event' => function ($q) {
+                $q->select('id', 'title', 'sport_type');
+            },
+            'branch'
+        ])->latest()->get();
 
         return $cashes;
     }
     public function cashVerification($id)
     {
-        $cash = Cash::where('id',$id)->first();
+        $cash = Cash::where('id', $id)->first();
 
-        if(!$cash){
-             throw ValidationException::withMessages([
+        if (!$cash) {
+            throw ValidationException::withMessages([
                 'message' => 'Cash request ID not found.',
             ]);
         }
@@ -40,5 +45,20 @@ class CashServece
         $cash->save();
 
         return $cash;
+    }
+
+    public function deleteRequest($id)
+    {
+        $cash = Cash::find($id);
+
+        if (!$cash) {
+            throw ValidationException::withMessages([
+                'message' => 'Cash request ID not found.',
+            ]);
+        }
+
+        $cash->delete();
+
+        return true;
     }
 }

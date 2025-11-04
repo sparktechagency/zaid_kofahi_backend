@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Admin\CashServece;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CashController extends Controller
@@ -18,18 +19,8 @@ class CashController extends Controller
     public function getCashRequests()
     {
         try {
-            $event = $this->cashServece->getCashRequests();
-            return $this->sendResponse($event, 'Get cash requests successfully retrieved.');
-        } catch (Exception $e) {
-            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function viewRequest($id)
-    {
-        try {
-            $event = $this->cashServece->viewRequest($id);
-            return $this->sendResponse($event, 'Request successfully retrieved.');
+            $result = $this->cashServece->getCashRequests();
+            return $this->sendResponse($result, 'Get cash requests successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -38,8 +29,18 @@ class CashController extends Controller
     public function cashVerification($id)
     {
         try {
-            $event = $this->cashServece->cashVerification($id);
-            return $this->sendResponse($event, 'Cash request verified successfully.');
+            $result = $this->cashServece->cashVerification($id);
+            return $this->sendResponse($result, 'Cash request verified successfully.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteRequest($id): JsonResponse
+    {
+        try {
+            $result = $this->cashServece->deleteRequest($id);
+            return $this->sendResponse([], 'Cash request deleted successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

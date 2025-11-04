@@ -30,7 +30,7 @@ class DiscoverService
 
         return $events;
     }
-    public function singleJoin($id)
+    public function singleJoin($player_id, $id)
     {
         $event = Event::where('id', $id)->first();
 
@@ -65,7 +65,7 @@ class DiscoverService
         Profile::where('user_id', Auth::id())->increment('total_event_joined', 1);
 
         $join = EventMember::create([
-            'player_id' => Auth::id(),
+            'player_id' => $player_id ?? Auth::id(),
             'event_id' => $id,
             'joining_date' => Carbon::today(),
         ]);

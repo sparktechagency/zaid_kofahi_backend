@@ -17,8 +17,8 @@ class TeamController extends Controller
      public function getTeams()
     {
         try {
-            $members = $this->teamService->getTeams();
-            return $this->sendResponse($members, 'Get teams successfully retrieved.');
+            $result = $this->teamService->getTeams();
+            return $this->sendResponse($result, 'Get teams successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -27,11 +27,11 @@ class TeamController extends Controller
     public function viewTeam($id)
     {
         try {
-            $event = $this->teamService->viewTeam($id);
-            if (!$event) {
+            $result = $this->teamService->viewTeam($id);
+            if (!$result) {
                 return $this->sendError('Event not found.', [], 404);
             }
-            return $this->sendResponse($event, 'Event successfully retrieved.');
+            return $this->sendResponse($result, 'Event successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

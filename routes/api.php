@@ -55,23 +55,23 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
     Route::post('/deposit', [TransactionController::class, 'deposit']);
     Route::post('/withdraw', [TransactionController::class, 'withdraw']);
-    
+
     // notification
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']);
     Route::patch('/read', [NotificationController::class, 'read']);
     Route::patch('/read-all', [NotificationController::class, 'readAll']);
     Route::get('/notification-status', [NotificationController::class, 'status']);
-    
-    
+
+
     Route::middleware('admin')->prefix('admin')->group(function () {
         // dashboard
         Route::get('/dashboard-info', [DashboardController::class, 'dashboardInfo']);
-        
+
         // user
         Route::get('/get-users', [UserController::class, 'getUsers']);
         Route::get('/view-user/{id?}', [UserController::class, 'viewUser']);
         Route::patch('/block-unblock-toggle/{id?}', [UserController::class, 'blockUnblockToggle']);
-        
+
         // event
         Route::get('/get-events', [AdminEventController::class, 'getEvents']);
         Route::get('/view-event/{id?}', [AdminEventController::class, 'viewEvent']);
@@ -79,11 +79,11 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/accept-winner/{id?}', [AdminEventController::class, 'acceptWinner']);
         Route::patch('/decline-winner/{id?}', [AdminEventController::class, 'declineWinner']);
         Route::post('/prize-distribution/{id?}', [AdminEventController::class, 'prizeDistribution']);
-        
+
         // team
         Route::get('/get-teams', [TeamController::class, 'getTeams']);
         Route::get('/view-team/{id?}', [TeamController::class, 'viewTeam']);
-        
+
         // branch management
         Route::get('/get-branches', [BranchController::class, 'getBranches']);
         Route::post('/create-branch', [BranchController::class, 'createBranch']);
@@ -92,15 +92,18 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/delete-branch/{id?}', [BranchController::class, 'deleteBranch']);
 
         // cash varification
-        Route::get('/get-cash-requests',[CashController::class,'getCashRequests']);
-        Route::patch('/cash-verification/{id?}',[CashController::class,'cashVerification']);
-        
+        Route::get('/get-cash-requests', [CashController::class, 'getCashRequests']);
+        Route::patch('/cash-verification/{id?}', [CashController::class, 'cashVerification']);
+        Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
+        Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
+        Route::delete('/delete-request/{id?}', [CashController::class, 'deleteRequest']);
+
         // transaction
         Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
 
         // leaderboard info 
-        Route::get('/leader-board-info',[AdminLeaderBoardController::class,'leaderBoardInfo']);
-        
+        Route::get('/leader-board-info', [AdminLeaderBoardController::class, 'leaderBoardInfo']);
+
         // disputes
         Route::get('/get-disputes', [DisputeController::class, 'getDisputes']);
         Route::patch('/report-solve/{id?}', [DisputeController::class, 'reportSolve']);

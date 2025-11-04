@@ -17,8 +17,8 @@ class DashboardController extends Controller
      public function dashboardInfo()
     {
         try {
-            $members = $this->dashboardService->dashboardInfo();
-            return $this->sendResponse($members, 'Dashboard information successfully retrieved.');
+            $result = $this->dashboardService->dashboardInfo();
+            return $this->sendResponse($result, 'Dashboard information successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

@@ -17,8 +17,8 @@ class EventController extends Controller
      public function getEvents()
     {
         try {
-            $members = $this->eventService->getEvents();
-            return $this->sendResponse($members, 'Get Events successfully retrieved.');
+            $result = $this->eventService->getEvents();
+            return $this->sendResponse($result, 'Get Events successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -26,11 +26,11 @@ class EventController extends Controller
     public function viewEvent($id)
     {
         try {
-            $event = $this->eventService->viewEvent($id);
-            if (!$event) {
+            $result = $this->eventService->viewEvent($id);
+            if (!$result) {
                 return $this->sendError('Event not found.', [], 404);
             }
-            return $this->sendResponse($event, 'Event successfully retrieved.');
+            return $this->sendResponse($result, 'Event successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -39,8 +39,8 @@ class EventController extends Controller
      public function getWinners($id)
     {
         try {
-            $winners = $this->eventService->getWinners($id);
-            return $this->sendResponse($winners, 'Get winners successfully retrieved.');
+            $result = $this->eventService->getWinners($id);
+            return $this->sendResponse($result, 'Get winners successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -49,8 +49,8 @@ class EventController extends Controller
     public function acceptWinner($id)
     {
         try {
-            $accepted = $this->eventService->acceptWinner($id);
-            return $this->sendResponse($accepted, 'Winner Accepted successfully.');
+            $result = $this->eventService->acceptWinner($id);
+            return $this->sendResponse($result, 'Winner Accepted successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -59,8 +59,8 @@ class EventController extends Controller
     public function declineWinner($id)
     {
         try {
-            $declined = $this->eventService->declineWinner($id);
-            return $this->sendResponse($declined, 'Winner deleted successfully.');
+            $result = $this->eventService->declineWinner($id);
+            return $this->sendResponse($result, 'Winner deleted successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -69,8 +69,8 @@ class EventController extends Controller
     public function prizeDistribution($id)
     {
         try {
-            $prize_distribution = $this->eventService->prizeDistribution($id);
-            return $this->sendResponse($prize_distribution, 'Prize distribution successfully.');
+            $result = $this->eventService->prizeDistribution($id);
+            return $this->sendResponse($result, 'Prize distribution successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
