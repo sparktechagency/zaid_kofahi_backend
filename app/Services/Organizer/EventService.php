@@ -255,9 +255,15 @@ class EventService
             return true;
         }
     }
-    public function getEventMembersLists($id)
+    public function getEventMembersList($id)
     {
         $event = Event::where('id', $id)->first();
+
+         if(!$event){
+             throw ValidationException::withMessages([
+                'message' => 'Event ID not found.',
+            ]);
+        }
 
         if ($event->sport_type == 'single') {
             $event_members = EventMember::with([

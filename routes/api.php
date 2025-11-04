@@ -140,6 +140,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/delete-team/{id}', [ProfileContrller::class, 'deleteTeam']);
         Route::get('/player-profile-info', [ProfileContrller::class, 'playerProfileInfo']);
         Route::post('/create-report', [ProfileContrller::class, 'createReport']);
+        Route::get('/follower-following-list', [ProfileContrller::class, 'followerFollowingList']);
     });
 
     Route::middleware('organizer')->prefix('organizer')->group(function () {
@@ -153,7 +154,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/event-pay/{id?}', [EventController::class, 'eventPay']);
         Route::post('/selected-winner/{id?}', [EventController::class, 'selectedWinner']);
         Route::delete('/remove-event-member/{id?}', [EventController::class, 'remove']);
-        Route::get('/get-event-members-lists/{id?}', [EventController::class, 'getEventMembersLists']);
+        Route::get('/get-event-members-list/{id?}', [EventController::class, 'getEventMembersList']);
 
         // performance info
         Route::get('/performance-info', [PerformanceController::class, 'performanceInfo']);
