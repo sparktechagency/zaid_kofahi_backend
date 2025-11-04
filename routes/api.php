@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\BranchController;
+use App\Http\Controllers\Api\Admin\CashController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\DisputeController;
 use App\Http\Controllers\Api\Admin\EventController as AdminEventController;
@@ -91,7 +92,8 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/delete-branch/{id?}', [BranchController::class, 'deleteBranch']);
 
         // cash varification
-        // Route::get('/get-cash-requests',[]);
+        Route::get('/get-cash-requests',[CashController::class,'getCashRequests']);
+        Route::patch('/cash-verification/{id?}',[CashController::class,'cashVerification']);
         
         // transaction
         Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
@@ -119,6 +121,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/get-event-details/{id?}', [DiscoverController::class, 'getEventDetails']);
         Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
         Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
+        Route::post('/create-cash-request/{id?}', [DiscoverController::class, 'createCashRequest']);
 
         // near me event
         Route::get('/near-me-events', [NearMeController::class, 'nearMeEvents']);

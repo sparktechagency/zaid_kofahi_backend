@@ -2,6 +2,7 @@
 
 namespace App\Services\Player;
 
+use App\Models\Cash;
 use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Profile;
@@ -189,5 +190,18 @@ class DiscoverService
                 'view' => $event->view
             ],
         ];
+    }
+
+    public function createCashRequest($data)
+    {
+        $cash = Cash::create([
+            'event_id' => $data['event_id'],
+            'player_id' => $data['team_id'] ? null : $data['player_id'],
+            'team_id' => $data['team_id'] ?? null,
+            'amount' => $data['amount'],
+            'branch_id' => $data['branch_id'],
+        ]);
+
+        return $cash;
     }
 }

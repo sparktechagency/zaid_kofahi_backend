@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Player\DiscoverService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DiscoverController extends Controller
 {
@@ -65,4 +66,25 @@ class DiscoverController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function createCashRequest(Request $request,$id)
+    {
+        try {
+
+            $data = [
+                'event_id'=>$id,
+                'player_id'=>Auth::id(),
+                'team_id'=>$request->team_id,
+                'amount'=>$request->amount,
+                'branch_id'=>$request->branch_id,
+            ];
+
+            $event = $this->discoverService->createCashRequest($data);
+
+            return $this->sendResponse($event, 'Cash request created successfully.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
 }
