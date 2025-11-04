@@ -14,11 +14,11 @@ class LeaderboardController extends Controller
     {
         $this->leaderboardService = $leaderboardService;
     }
-     public function leaderboardInfo()
+     public function leaderboardInfo(Request $request)
     {
         try {
-            $members = $this->leaderboardService->leaderboardInfo();
-            return $this->sendResponse($members, 'Leaderboard information successfully retrieved.');
+            $members = $this->leaderboardService->leaderboardInfo($request->filter);
+            return $this->sendResponse($members, 'Leader board information successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

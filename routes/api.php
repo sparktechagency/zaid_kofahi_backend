@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Admin\BranchController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\DisputeController;
 use App\Http\Controllers\Api\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Api\Admin\LeaderBoardController as AdminLeaderBoardController;
 use App\Http\Controllers\Api\Admin\TeamController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AuthController;
@@ -88,9 +89,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/view-branch/{id?}', [BranchController::class, 'viewBranch']);
         Route::patch('/edit-branch/{id?}', [BranchController::class, 'editBranch']);
         Route::delete('/delete-branch/{id?}', [BranchController::class, 'deleteBranch']);
+
+        // cash varification
+        // Route::get('/get-cash-requests',[]);
         
         // transaction
         Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
+
+        // leaderboard info 
+        Route::get('/leader-board-info',[AdminLeaderBoardController::class,'leaderBoardInfo']);
         
         // disputes
         Route::get('/get-disputes', [DisputeController::class, 'getDisputes']);
