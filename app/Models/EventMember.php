@@ -13,11 +13,16 @@ class EventMember extends Model
 
     public function player()
     {
-        return $this->belongsTo(User::class,'id');
+        return $this->belongsTo(User::class, 'id');
     }
 
     public function team()
     {
         return $this->belongsTo(Team::class, 'team_id');
+    }
+
+    public function teamMembers()
+    {
+        return $this->hasMany(TeamMember::class, 'team_id', 'team_id');
     }
 }

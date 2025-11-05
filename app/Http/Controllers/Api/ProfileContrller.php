@@ -92,4 +92,24 @@ class ProfileContrller extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+
+     public function getFollowerFollowingList()
+    {
+        try {
+            $result = $this->profileService->getFollowerFollowingList();
+            return $this->sendResponse($result, 'Get follower following list successfully retrieved.', true, 200);
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function share($id)
+    {
+        try {
+            $team = $this->profileService->share($id);
+            return $this->sendResponse($team, 'Event share successfully.', true, 200);
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
 }

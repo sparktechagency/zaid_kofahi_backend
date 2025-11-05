@@ -34,4 +34,9 @@ class Event extends Model
             : 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->title);
     }
 
+    public function members()
+    {
+        return $this->hasMany(EventMember::class, 'event_id');
+    }
+
 }

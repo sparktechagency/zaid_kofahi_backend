@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\LeaderBoardController as AdminLeaderBoardCont
 use App\Http\Controllers\Api\Admin\TeamController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Organizer\EventController;
 use App\Http\Controllers\Api\Organizer\PerformanceController;
@@ -55,6 +56,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
     Route::post('/deposit', [TransactionController::class, 'deposit']);
     Route::post('/withdraw', [TransactionController::class, 'withdraw']);
+
+    // follow unfollow toggle
+    Route::post('/follow-unfollow-toggle/{id?}',[FollowController::class,'followUnfollowToggle']);
 
     // notification
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']);
@@ -140,7 +144,8 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/delete-team/{id}', [ProfileContrller::class, 'deleteTeam']);
         Route::get('/player-profile-info', [ProfileContrller::class, 'playerProfileInfo']);
         Route::post('/create-report', [ProfileContrller::class, 'createReport']);
-        Route::get('/follower-following-list', [ProfileContrller::class, 'followerFollowingList']);
+        Route::get('/get-follower-following-list', [ProfileContrller::class, 'getFollowerFollowingList']);
+        Route::patch('/share/{id?}', [ProfileContrller::class, 'share']);
     });
 
     Route::middleware('organizer')->prefix('organizer')->group(function () {

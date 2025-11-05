@@ -16,7 +16,6 @@ class LeaderboardService
 
     public function leaderBoardInfo($filter)
     {
-
         if ($filter == 'earnings') {
 
             $topPlayers = User::where('role', 'PLAYER')

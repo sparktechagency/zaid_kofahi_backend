@@ -2,11 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Event;
+use App\Models\Follow;
+use App\Models\Profile;
 use App\Models\Report;
 use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 
 class ProfileService
@@ -29,6 +33,8 @@ class ProfileService
             'player_id' => Auth::id(),
             'name' => $data['name'],
         ]);
+
+        $data['members'][] = strval(Auth::id());
 
         foreach ($data['members'] as $player_id) {
             TeamMember::create([
@@ -61,47 +67,128 @@ class ProfileService
         $team = Team::findOrFail($id);
         return $team->delete();
     }
-
     public function organizerProfileInfo()
     {
+        $follower_list = Follow::where('follower_id', Auth::id())->whereHas('user', function ($q) {
+            $q->where('role', 'PLAYER');
+        })->count();
+
+        $total_events = Event::where('organizer_id', Auth::id())->count();
+        $completed = Event::where('organizer_id', Auth::id())->where('status', 'Completed')->count();
+        $upcoming = Event::where('organizer_id', Auth::id())->where('status', 'Upcoming')->count();
+        $canceled = Event::where('organizer_id', Auth::id())->where('status', 'Canceled')->count();
+
         return [
-            'user_info' => User::with('profile')->where('id',Auth::id())->first(),
+            'user_info' => User::with('profile')->where('id', Auth::id())->first(),
             'follower_info' => [
-                'followings' => 10,
-                'followers' => 4
+                'followings' => 'No following yet.',
+                'followers' => $follower_list
             ],
             'events_status' => [
-                'total_events' => 1,
-                'completed' => 4,
-                'upcoming' => 7,
-                'canceled' => 0
+                'total_events' => $total_events,
+                'completed' => $completed,
+                'upcoming' => $upcoming,
+                'canceled' => $canceled
             ],
-            'recent_events' => 'recent_events',
+            'recent_events' => Event::where('organizer_id', Auth::id())
+                ->select('id', 'title', 'sport_type', 'status')
+                ->latest()
+                ->take(3)
+                ->get(),
         ];
     }
-
     public function playerProfileInfo()
     {
-         return [
-            'user_info' => User::with('profile')->where('id',Auth::id())->first(),
+        $following_list = Follow::where('user_id', Auth::id())->whereHas('follower', function ($q) {
+            $q->where('role', 'PLAYER');
+        })->count();
+
+        $follower_list = Follow::where('follower_id', Auth::id())->whereHas('user', function ($q) {
+            $q->where('role', 'PLAYER');
+        })->count();
+
+        $profiles = Profile::orderBy('total_earning', 'desc')->get();
+        $userProfile = Profile::where('user_id', Auth::id())->first();
+        $rank = $profiles->search(function ($profile) use ($userProfile) {
+            return $profile->id === $userProfile->id;
+        }) + 1;
+
+        $userId = Auth::id();
+
+        $userEvents = Event::where(function ($query) use ($userId) {
+            $query->whereHas('members', function ($q) use ($userId) {
+                $q->where('player_id', $userId);
+            })
+                ->orWhereHas('members.teamMembers', function ($q) use ($userId) {
+                    $q->where('player_id', $userId);
+                });
+        })
+            ->select('id', 'title', 'sport_type')
+            // ->with(['members', 'members.teamMembers'])
+            ->get();
+
+        return [
+            'user_info' => User::with('profile')->where('id', Auth::id())->first(),
             'follower_info' => [
-                'followings' => '1.2k',
-                'followers' => '2.2k'
+                'followings' => $following_list,
+                'followers' => $follower_list
             ],
             'events_status' => [
-                'events_joined' => '12',
-                'total_winnings' => '$850',
-                'top_rank' => '#3'
+                'events_joined' => $userProfile->total_event_joined,
+                'total_winnings' => '$' . $userProfile->total_earning,
+                'top_rank' => '#' . $rank
             ],
+            'my_events' => $userEvents,
         ];
     }
-
     public function createReport($data)
     {
 
         $data['reported_by'] = Auth::id();
 
-         return Report::create($data);
+        return Report::create($data);
+    }
+    public function getFollowerFollowingList()
+    {
+        $follower_list = Follow::with([
+            'user' => function ($q) {
+                $q->select('id', 'full_name', 'user_name', 'role');
+            }
+        ])->where('follower_id', Auth::id())->whereHas('user', function ($q) {
+            $q->where('role', 'PLAYER');
+        })->get();
+
+        $following_list = Follow::with([
+            'follower' => function ($q) {
+                $q->select('id', 'full_name', 'user_name', 'role');
+            }
+        ])->where('user_id', Auth::id())->whereHas('follower', function ($q) {
+            $q->where('role', 'PLAYER');
+        })->get();
+
+        $follower_following_list = $follower_list->merge($following_list);
+
+        return [
+            'follower_list' => $follower_list,
+
+            'following_list' => $following_list,
+
+            'follower_following_list' => $follower_following_list
+        ];
+    }
+    public function share($id)
+    {
+        $event = Event::where('id', $id)->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event not found.',
+            ]);
+        }
+
+        $event->increment('share');
+
+        return $event;
     }
 
 }
