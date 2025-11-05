@@ -28,7 +28,7 @@ return new class extends Migration {
             $table->json('prize_distribution');
             $table->string('rules_guidelines');
             $table->string('image');
-            $table->enum('status', ['Pending Payment', 'Upcoming', 'Ongoing', 'Event Over', 'Awaiting Confirmation', 'Completed', ])->default('Pending Payment');
+            $table->enum('status', ['Pending Payment', 'Upcoming', 'Cancelled', 'Ongoing', 'Event Over', 'Awaiting Confirmation', 'Completed', ])->default('Pending Payment');
             $table->unsignedBigInteger('view')->default(0);
             $table->unsignedBigInteger('share')->default(0);
             $table->timestamps();

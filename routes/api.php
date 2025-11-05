@@ -4,8 +4,11 @@ use App\Http\Controllers\Api\Admin\BranchController;
 use App\Http\Controllers\Api\Admin\CashController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\DisputeController;
+use App\Http\Controllers\Api\Admin\EarningController;
 use App\Http\Controllers\Api\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Api\Admin\LeaderBoardController as AdminLeaderBoardController;
+use App\Http\Controllers\Api\Admin\PaymentController;
+use App\Http\Controllers\Api\Admin\RefundController;
 use App\Http\Controllers\Api\Admin\TeamController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Auth\AuthController;
@@ -104,6 +107,20 @@ Route::middleware('auth:api')->group(function () {
 
         // transaction
         Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
+
+        // payment
+        Route::get('/payment-list',[PaymentController::class,'paymentList']);
+        Route::patch('/confirm-payment/{id?}',[PaymentController::class,'confirmPayment']);
+
+
+        // earning
+        Route::get('/earning-list',[EarningController::class,'earningList']);
+
+
+        // refund
+        Route::get('/refund-list',[RefundController::class,'refundList']);
+        Route::patch('/confirm-refund/{id?}',[RefundController::class,'confirmRefund']);
+        Route::delete('/cancel-refund/{id?}',[RefundController::class,'cancelRefund']);
 
         // leaderboard info 
         Route::get('/leader-board-info', [AdminLeaderBoardController::class, 'leaderBoardInfo']);
