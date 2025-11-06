@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('full_name');
             $table->string('user_name');
+            $table->string('connected_account_id')->nullable();
             $table->enum('role', ['ADMIN', 'FINANCE', 'SUPPORT', 'PLAYER', 'ORGANIZER'])->default('PLAYER');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
