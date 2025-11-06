@@ -178,6 +178,8 @@ class DiscoverService
         $max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
         $joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
 
+        $event->increment('view');
+
         return [
             'event' => $event,
             'max' => $max,

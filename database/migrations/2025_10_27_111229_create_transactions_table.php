@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('payment_intent_id');
             $table->foreignId('user_id')->constrained('users');
             $table->unsignedInteger('event_id')->nullable();
             $table->enum('type',['Deposit','Entry Free','Platform Free','Withdraw','Payout','Refund','Earning','Winning']);

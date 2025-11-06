@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\Player\NearMeController;
 use App\Http\Controllers\Api\ProfileContrller;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
+use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,13 @@ Route::middleware('auth:api')->group(function () {
 
     // follow unfollow toggle
     Route::post('/follow-unfollow-toggle/{id?}',[FollowController::class,'followUnfollowToggle']);
+
+    // connected account 
+    Route::post('create-connected-account',[StripeController::class,'createConnectedAccount']);
+
+    // payment intent and success
+    Route::post('/payment-intent',[StripeController::class,'paymentIntent']);
+    Route::post('/payment-success',[StripeController::class,'paymentSuccess']);
 
     // notification
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']);
