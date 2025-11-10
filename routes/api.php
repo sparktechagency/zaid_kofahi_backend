@@ -138,11 +138,50 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::middleware('finance')->prefix('finance')->group(function () {
-        //
+        // dashboard
+        Route::get('/dashboard-info', [DashboardController::class, 'dashboardInfo']);
+
+        // transaction
+        Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
+
+         // payment
+        Route::get('/payment-list',[PaymentController::class,'paymentList']);
+        Route::patch('/confirm-payment/{id?}',[PaymentController::class,'confirmPayment']);
+
+        // earning
+        Route::get('/earning-list',[EarningController::class,'earningList']);
+
+        // refund
+        Route::get('/refund-list',[RefundController::class,'refundList']);
+        Route::patch('/confirm-refund/{id?}',[RefundController::class,'confirmRefund']);
+        Route::delete('/cancel-refund/{id?}',[RefundController::class,'cancelRefund']);
+
     });
 
     Route::middleware('support')->prefix('support')->group(function () {
-        //
+        // dashboard
+        Route::get('/dashboard-info', [DashboardController::class, 'dashboardInfo']);
+
+         // user
+        Route::get('/get-users', [UserController::class, 'getUsers']);
+        Route::get('/view-user/{id?}', [UserController::class, 'viewUser']);
+        Route::patch('/block-unblock-toggle/{id?}', [UserController::class, 'blockUnblockToggle']);
+
+        // event
+        Route::get('/get-events', [AdminEventController::class, 'getEvents']);
+        Route::get('/view-event/{id?}', [AdminEventController::class, 'viewEvent']);
+        Route::get('/get-winners/{id?}', [AdminEventController::class, 'getWinners']);
+        Route::patch('/accept-winner/{id?}', [AdminEventController::class, 'acceptWinner']);
+        Route::patch('/decline-winner/{id?}', [AdminEventController::class, 'declineWinner']);
+        Route::post('/prize-distribution/{id?}', [AdminEventController::class, 'prizeDistribution']);
+
+        // team
+        Route::get('/get-teams', [TeamController::class, 'getTeams']);
+        Route::get('/view-team/{id?}', [TeamController::class, 'viewTeam']);
+
+         // disputes
+        Route::get('/get-disputes', [DisputeController::class, 'getDisputes']);
+        Route::patch('/report-solve/{id?}', [DisputeController::class, 'reportSolve']);
     });
 
     Route::middleware('player')->prefix('player')->group(function () {

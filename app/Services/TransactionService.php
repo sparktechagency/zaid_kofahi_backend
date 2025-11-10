@@ -21,7 +21,7 @@ class TransactionService
     public function getTransactions(?int $per_page)
     {
 
-        if (in_array(Auth::user()->role, ['ADMIN'])) {
+        if (in_array(Auth::user()->role, ['ADMIN','FINANCE','SUPPORT'])) {
             $transactions = Transaction::latest()->paginate($per_page ?? 10);
             $withdraws = Withdraw::latest()->paginate($per_page ?? 10);
             return [
