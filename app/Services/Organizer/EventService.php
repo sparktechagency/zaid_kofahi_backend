@@ -34,7 +34,7 @@ class EventService
 
         return Event::create($data);
     }
-    public function updateEvent($id, $data)
+    public function updateEvent1($id, $data)
     {
         $event = Event::where('id', $id)
             ->first();
@@ -56,7 +56,9 @@ class EventService
                 $data['image'] = '/storage/' . $path;
             }
 
+
             $data['time'] = Carbon::createFromFormat('h:i A', $data['time'])->format('H:i');  // 15:00
+
 
             $event->title = $data['title'] ?? $event->title;
             $event->description = $data['description'] ?? $event->description;
@@ -68,7 +70,7 @@ class EventService
             $event->number_of_player_required = $data['number_of_player_required'] ?? $event->number_of_player_required;
             $event->number_of_team_required = $data['number_of_team_required'] ?? $event->number_of_team_required;
             $event->number_of_player_required_in_a_team = $data['number_of_player_required_in_a_team'] ?? $event->number_of_player_required_in_a_team;
-            $event->entry_free = $data['entry_free'] ?? $event->entry_free;
+            $event->entry_fee = $data['entry_fee'] ?? $event->entry_fee;
             $event->prize_amount = $data['prize_amount'] ?? $event->prize_amount;
             $event->prize_distribution = $data['prize_distribution'] ?? $event->prize_distribution;
             $event->rules_guidelines = $data['rules_guidelines'] ?? $event->rules_guidelines;
@@ -78,6 +80,50 @@ class EventService
         }
 
         return null;
+    }
+    public function updateEvent($id, $data)
+    {
+        $event = Event::where('id', $id)->first();
+
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        if (isset($data['image'])) {
+            if ($event->image && Storage::disk('public')->exists(str_replace('/storage/', '', $event->image))) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $event->image));
+            }
+
+            $path = $data['image']->store('images', 'public');
+            $data['image'] = '/storage/' . $path;
+        }
+
+        if (isset($data['time']) && !empty($data['time'])) {
+            try {
+                $data['time'] = Carbon::createFromFormat('h:i A', $data['time'])->format('H:i');  // 15:00
+            } catch (Exception $e) {
+                return response()->json(['message' => 'Invalid time format'], 400);
+            }
+        }
+
+        $event->title = $data['title'] ?? $event->title;
+        $event->description = $data['description'] ?? $event->description;
+        $event->sport_type = $data['sport_type'] ?? $event->sport_type;
+        $event->starting_date = $data['starting_date'] ?? $event->starting_date;
+        $event->ending_date = $data['ending_date'] ?? $event->ending_date;
+        $event->time = $data['time'] ?? $event->time;
+        $event->location = $data['location'] ?? $event->location;
+        $event->number_of_player_required = $data['number_of_player_required'] ?? $event->number_of_player_required;
+        $event->number_of_team_required = $data['number_of_team_required'] ?? $event->number_of_team_required;
+        $event->number_of_player_required_in_a_team = $data['number_of_player_required_in_a_team'] ?? $event->number_of_player_required_in_a_team;
+        $event->entry_fee = $data['entry_fee'] ?? $event->entry_fee;
+        $event->prize_amount = $data['prize_amount'] ?? $event->prize_amount;
+        $event->prize_distribution = $data['prize_distribution'] ?? $event->prize_distribution;
+        $event->rules_guidelines = $data['rules_guidelines'] ?? $event->rules_guidelines;
+
+        $event->save();
+
+        return $event;
     }
     public function getEvents(?int $per_page)
     {
@@ -171,30 +217,30 @@ class EventService
 
         $event = Event::where('id', $id)->first();
 
-        if($event->status == 'Awaiting Confirmation'){
+        if ($event->status == 'Awaiting Confirmation') {
             throw ValidationException::withMessages([
                 'message' => 'You has already selected the winner.',
             ]);
         }
 
         // if ($event->status == 'Event Over') {
-            $data = is_string($data) ? json_decode($data, true) : $data;
-            $winners = [];
-            foreach ($data as $item) {
-                $winners[] = Winner::create([
-                    'event_id' => $id,
-                    'place' => $item['place'],
-                    'player_id' => $item['player_id'],
-                    'team_id' => $item['team_id'] ?? null,
-                    'amount' => $item['amount'],
-                    'additional_prize' => $item['additional_prize'] ?? null,
-                ]);
-            }
+        $data = is_string($data) ? json_decode($data, true) : $data;
+        $winners = [];
+        foreach ($data as $item) {
+            $winners[] = Winner::create([
+                'event_id' => $id,
+                'place' => $item['place'],
+                'player_id' => $item['player_id'],
+                'team_id' => $item['team_id'] ?? null,
+                'amount' => $item['amount'],
+                'additional_prize' => $item['additional_prize'] ?? null,
+            ]);
+        }
 
-            $event->status = 'Awaiting Confirmation';
-            $event->save();
+        $event->status = 'Awaiting Confirmation';
+        $event->save();
 
-            return $winners;
+        return $winners;
         // } else {
         //     throw ValidationException::withMessages([
         //         'message' => 'Wait until the this event are over.',
@@ -231,8 +277,8 @@ class EventService
     {
         $event = Event::where('id', $id)->first();
 
-         if(!$event){
-             throw ValidationException::withMessages([
+        if (!$event) {
+            throw ValidationException::withMessages([
                 'message' => 'Event ID not found.',
             ]);
         }

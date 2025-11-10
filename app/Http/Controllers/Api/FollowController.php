@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\EventMember;
 use App\Models\Follow;
+use App\Models\Refund;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -61,5 +65,11 @@ class FollowController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    public function testCommand()
+    {
+        return 'test';
     }
 }

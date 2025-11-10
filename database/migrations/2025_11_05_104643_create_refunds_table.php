@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('refunds', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('event_id');
             $table->string('event_name');
             $table->enum('event_type',['single','team']);
             $table->unsignedInteger('participants')->default(0);

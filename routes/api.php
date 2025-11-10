@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Route;
 
 
 
+Route::post('/test-command',[FollowController::class,'testCommand']);
+
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
@@ -62,6 +65,7 @@ Route::middleware('auth:api')->group(function () {
 
     // follow unfollow toggle
     Route::post('/follow-unfollow-toggle/{id?}',[FollowController::class,'followUnfollowToggle']);
+    
 
     // connected account 
     Route::post('create-connected-account',[StripeController::class,'createConnectedAccount']);
