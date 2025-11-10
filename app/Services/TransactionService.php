@@ -56,8 +56,7 @@ class TransactionService
         $withdraw = Withdraw::create([
             'user_id' => Auth::id(),
             'amount' => $data['amount'],
-            'date' => Carbon::now()->format('Y-m-d'),
-            'status' => 'Pending',
+            'date' => Carbon::now()->format('Y-m-d')
         ]);
 
         return $withdraw;
@@ -81,6 +80,7 @@ class TransactionService
         $withdraw->save();
 
         $transaction = Transaction::create([
+            'payment_intent_id' => '',
             'user_id' => $withdraw->user_id,
             'event_id' => $data['event_id'] ?? null,
             'type' => 'Withdraw',
