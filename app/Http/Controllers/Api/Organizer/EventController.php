@@ -86,20 +86,6 @@ class EventController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-    public function eventPay(EventPayRequest $request, $id)
-    {
-        try {
-            $validatedData = $request->validated();
-            $event = $this->eventService->eventPay($validatedData, $id);
-            if ($event == false) {
-                return $this->sendResponse([], 'Insufficient balance!', false, 400);
-            }
-            return $this->sendResponse($event, 'Event payment successfully.', true, 200);
-        } catch (Exception $e) {
-            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
-        }
-    }
-
     public function selectedWinner(Request $request, $id)
     {
         try {
@@ -109,7 +95,6 @@ class EventController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function remove($id)
     {
         try {

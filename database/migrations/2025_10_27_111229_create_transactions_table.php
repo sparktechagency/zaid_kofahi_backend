@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('payment_intent_id');
             $table->foreignId('user_id')->constrained('users');
             $table->unsignedInteger('event_id')->nullable();
-            $table->enum('type',['Deposit','Entry Free','Platform Free','Withdraw','Payout','Refund','Earning','Winning']);
+            $table->enum('type',['Deposit','Entry Fee','Platform Fee','Withdraw','Payout','Refund','Earning','Winning']);
             $table->decimal('amount',10,2)->default(0);
             $table->timestamp('date');
             $table->enum('status',['Completed'])->default('Completed');

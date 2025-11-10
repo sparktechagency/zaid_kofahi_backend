@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->unsignedInteger('number_of_player_required')->default(0);
             $table->unsignedInteger('number_of_team_required')->default(0);
             $table->unsignedInteger('number_of_player_required_in_a_team')->default(0);
-            $table->decimal('entry_free', 10, 2)->default(0);
+            $table->decimal('entry_fee', 10, 2)->default(0);
             $table->decimal('prize_amount', 10, 2)->default(0);
             $table->json('prize_distribution');
             $table->string('rules_guidelines');

@@ -29,7 +29,7 @@ class CreateEventRequest extends FormRequest
             'ending_date' => 'required|date|after_or_equal:starting_date',
             'time' => 'required|date_format:h:i A',
             'location' => 'required|string|max:255',
-            'entry_free' => 'required|numeric|min:0',
+            'entry_fee' => 'required|numeric|min:0',
             'prize_amount' => 'required|numeric|min:0',
             'prize_distribution' => 'required',
             'rules_guidelines' => 'required|string',

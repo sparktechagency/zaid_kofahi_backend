@@ -17,23 +17,7 @@ class TransactionService
     {
         //
     }
-    public function deposit($data)
-    {
-        $profile = Profile::where('user_id', Auth::id())->first();
-
-        $profile->increment('total_balance', $data['amount']);
-
-        $transaction = Transaction::create([
-            'user_id' => Auth::id(),
-            'event_id' => $data['event_id'],
-            'type' => 'Deposit',
-            'amount' => $data['amount'],
-            'data' => Carbon::now()->format('Y-m-d'),
-            'status' => 'Completed',
-        ]);
-
-        return $transaction;
-    }
+    
     public function getTransactions(?int $per_page)
     {
 

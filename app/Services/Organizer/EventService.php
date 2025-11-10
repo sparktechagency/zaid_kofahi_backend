@@ -166,34 +166,6 @@ class EventService
             ],
         ];
     }
-    public function eventPay($data, $id)
-    {
-        $profile = Profile::where('user_id', Auth::id())->first();
-
-        $available_balance = $profile->total_balance - ($profile->total_expence + $profile->total_withdraw);
-
-        if ($available_balance >= $data['amount']) {
-            $profile->increment('total_expence', $data['amount']);
-
-            $event = Event::where('id', $id)->first();
-
-            $event->status = 'Upcoming';
-            $event->save();
-
-            $transaction = Transaction::create([
-                'user_id' => Auth::id(),
-                'event_id' => $event->id,
-                'type' => 'Payout',
-                'amount' => $data['amount'],
-                'data' => Carbon::now()->format('Y-m-d'),
-                'status' => 'Completed',
-            ]);
-
-            return $transaction;
-        } else {
-            return false;
-        }
-    }
     public function selectedWinner($data, $id)
     {
 

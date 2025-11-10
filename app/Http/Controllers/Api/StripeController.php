@@ -111,7 +111,7 @@ class StripeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'event_id' => 'required|numeric|exists:events,id',
-            'prize_amount' => 'required|numeric',
+            'amount' => 'required|numeric',
             'payment_method_types' => 'required|string',
         ]);
 
@@ -126,7 +126,7 @@ class StripeController extends Controller
 
         try {
             $paymentIntent = PaymentIntent::create([
-                'amount' => $request->prize_amount * 100, // cents
+                'amount' => $request->amount * 100, // cents
                 'currency' => 'usd',
                 'payment_method_types' => [$request->payment_method_types], // example: 'card'
                 'payment_method' => 'pm_card_visa', // ✅ test card method ID
@@ -169,26 +169,46 @@ class StripeController extends Controller
             $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
             if ($paymentIntent->status === 'succeeded') {  // succeeded or requires_payment_method
 
-                $event = Event::where('id', $paymentIntent->metadata->event_id)->first();
+                if (Auth::user()->role == 'ORGANIZER') {
+                    $event = Event::where('id', $paymentIntent->metadata->event_id)->first();
 
-                $event->status = 'Upcoming';
-                $event->save();
+                    $event->status = 'Upcoming';
+                    $event->save();
 
-                $transaction = Transaction::create([
-                    'payment_intent_id' => $paymentIntent->id,
-                    'user_id' => Auth::id(),
-                    'event_id' => $event->id,
-                    'type' => 'Deposit',
-                    'amount' => $event->prize_amount,
-                    'data' => Carbon::now()->format('Y-m-d'),
-                    'status' => 'Completed',
-                ]);
+                    $transaction = Transaction::create([
+                        'payment_intent_id' => $paymentIntent->id,
+                        'user_id' => Auth::id(),
+                        'event_id' => $event->id,
+                        'type' => 'Deposit',
+                        'amount' => $event->prize_amount,
+                        'data' => Carbon::now()->format('Y-m-d'),
+                        'status' => 'Completed',
+                    ]);
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Payment done and plan created successfully',
-                    'data' => $transaction,
-                ], 200);
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Event deposite successfully completed.',
+                        'data' => $transaction,
+                    ], 200);
+                } else {
+                    $event = Event::where('id', $paymentIntent->metadata->event_id)->first();
+
+                    $transaction = Transaction::create([
+                        'payment_intent_id' => $paymentIntent->id,
+                        'user_id' => Auth::id(),
+                        'event_id' => $event->id,
+                        'type' => 'Entry Fee',
+                        'amount' => $event->entry_fee,
+                        'data' => Carbon::now()->format('Y-m-d'),
+                        'status' => 'Completed',
+                    ]);
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Entry fee successfully completed.',
+                        'data' => $transaction,
+                    ], 200);
+                }
 
             } else {
                 return response()->json([

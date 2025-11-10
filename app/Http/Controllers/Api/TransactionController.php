@@ -17,16 +17,7 @@ class TransactionController extends Controller
     {
         $this->transactionService = $transactionService;
     }
-    public function deposit(DepositRequest $request)
-    {
-        try {
-            $validatedData = $request->validated();
-            $transaction = $this->transactionService->deposit($validatedData);
-            return $this->sendResponse($transaction, 'Deposit successfully.', true, 201);
-        } catch (Exception $e) {
-            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
-        }
-    }
+
     public function getTransactions(Request $request)
     {
         try {

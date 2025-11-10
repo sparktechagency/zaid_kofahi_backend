@@ -58,7 +58,6 @@ Route::middleware('auth:api')->group(function () {
 
     // trnasaction
     Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
-    Route::post('/deposit', [TransactionController::class, 'deposit']);
     Route::post('/withdraw', [TransactionController::class, 'withdraw']);
 
     // follow unfollow toggle
@@ -181,7 +180,6 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/edit-event/{id?}', [EventController::class, 'editEvent']);
         Route::delete('/delete-event/{id?}', [EventController::class, 'deleteEvent']);
         Route::get('/get-event-details/{id?}', [EventController::class, 'getEventDetails']);
-        Route::post('/event-pay/{id?}', [EventController::class, 'eventPay']);
         Route::post('/selected-winner/{id?}', [EventController::class, 'selectedWinner']);
         Route::delete('/remove-event-member/{id?}', [EventController::class, 'remove']);
         Route::get('/get-event-members-list/{id?}', [EventController::class, 'getEventMembersList']);
