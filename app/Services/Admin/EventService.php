@@ -2,7 +2,10 @@
 
 namespace App\Services\Admin;
 
+use App\Models\Earning;
 use App\Models\Event;
+use App\Models\Payment;
+use App\Models\User;
 use App\Models\Winner;
 use Carbon\Carbon;
 
@@ -66,17 +69,89 @@ class EventService
         return $winner;
     }
 
+    //  $table->unsignedInteger('user_id');
+    //         $table->enum('role', ['PLAYER', 'ORGANIZER']);
+    //         $table->unsignedInteger('event_id');
+    //         $table->string('event_name');
+    //         $table->enum('event_type', ['single', 'team']);
+    //         $table->json('winners')->nullable();
+    //         $table->string('organizer')->nullable();
+    //         $table->decimal('amount', 10, 2)->default(0);
+    //         $table->date('date');
+    //         $table->enum('status', ['Pending', 'Completed'])->default('Pending');
+
     public function prizeDistribution($id)
     {
 
         $event = Event::where('id', $id)->first();
 
+        $winners = Winner::where('event_id', $event->id)->where('status', 'Accepted')->get();
+
+        $organizer = User::where('id', $event->organizer_id)->first();
+
+        if ($event) {
+            $event->status = 'Completed';
+            $event->save();
+        }
+
         if ($event->sport_type == 'single') {
-            $winners = Winner::where('event_id', $id)->get();
-            return $winners;
-        }else{
-            $winners = Winner::where('event_id', $id)->get();
-            return $winners;
+
+            Earning::create([
+                'event_name' => $event->title,
+                'event_type' => $event->sport_type,
+                'total_entries' => $event->number_of_player_required * $event->entry_fee,
+                'commission' => ($event->number_of_player_required * $event->entry_fee) * 0.1,
+            ]);
+
+            Payment::create([
+                'user_id' => $organizer->id,
+                'role' => $organizer->role,
+                'event_id' => $event->id,
+                'event_name' => $event->title,
+                'event_type' => $event->sport_type,
+                'organizer' => $organizer->full_name,
+                'amount' => ($event->number_of_player_required * $event->entry_fee) * 0.9,
+                'date' => Carbon::now()->format('Y-m-d')
+            ]);
+
+
+            Payment::create([
+                'event_id' => $event->id,
+                'event_name' => $event->title,
+                'event_type' => $event->sport_type,
+                'winners' => $winners,
+                'amount' => $event->prize_amount,
+                'date' => Carbon::now()->format('Y-m-d')
+            ]);
+
+        } else {
+            Earning::create([
+                'event_name' => $event->title,
+                'event_type' => $event->sport_type,
+                'total_entries' => $event->number_of_team_required * $event->entry_fee,
+                'commission' => ($event->number_of_team_required * $event->entry_fee) * 0.1,
+            ]);
+
+            Payment::create([
+                'user_id' => $organizer->id,
+                'role' => $organizer->role,
+                'event_id' => $event->id,
+                'event_name' => $event->title,
+                'event_type' => $event->sport_type,
+                'organizer' => $organizer->full_name,
+                'amount' => ($event->number_of_team_required * $event->entry_fee) * 0.9,
+                'date' => Carbon::now()->format('Y-m-d')
+            ]);
+
+
+            Payment::create([
+                'event_id' => $event->id,
+                'event_name' => $event->title,
+                'event_type' => $event->sport_type,
+                'winners' => $winners,
+                'amount' => $event->prize_amount,
+                'date' => Carbon::now()->format('Y-m-d')
+            ]);
         }
     }
 }
