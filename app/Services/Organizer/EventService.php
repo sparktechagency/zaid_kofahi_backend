@@ -125,7 +125,7 @@ class EventService
 
         return $event;
     }
-    public function getEvents(?int $per_page)
+    public function getEvents1(?int $per_page, ?string $search, ?string $filter)
     {
         $events = Event::latest()->paginate($per_page ?? 10);
         foreach ($events as $event) {
@@ -134,6 +134,44 @@ class EventService
         }
         return $events;
     }
+
+    public function getEvents(?int $per_page, ?string $search, ?string $filter)
+    {
+        $events = Event::query();
+
+        if (!empty($search)) {
+            $events->where('title', 'like', "%$search%");
+        }
+
+        if (!empty($filter)) {
+            $allowedFilters = [
+                'Pending Payment',
+                'Upcoming',
+                'Cancelled',
+                'Ongoing',
+                'Event Over',
+                'Awaiting Confirmation',
+                'Completed',
+            ];
+
+            if (in_array($filter, $allowedFilters)) {
+                $events->where('status', $filter);
+            }
+        }
+
+        $events = $events->latest()->paginate($per_page ?? 10);
+        
+        foreach ($events as $event) {
+            $event->prize_distribution = json_decode($event->prize_distribution);
+
+            if (!empty($event->time)) {
+                $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+            }
+        }
+
+        return $events;
+    }
+
     public function viewEvent($id)
     {
         $event = Event::where('id', $id)
