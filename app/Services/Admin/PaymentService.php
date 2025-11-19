@@ -47,6 +47,15 @@ class PaymentService
 
     public function confirmPayment($id)
     {
-        return 'confirm Payment';
+        $payment = Payment::where('id',$id)->first();
+
+        if($payment->event_type == 'single'){
+            return 'single';
+        }else{
+            return 'team';
+        }
+
+
+        return $payment;
     }
 }

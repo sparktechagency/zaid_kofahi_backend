@@ -69,17 +69,6 @@ class EventService
         return $winner;
     }
 
-    //  $table->unsignedInteger('user_id');
-    //         $table->enum('role', ['PLAYER', 'ORGANIZER']);
-    //         $table->unsignedInteger('event_id');
-    //         $table->string('event_name');
-    //         $table->enum('event_type', ['single', 'team']);
-    //         $table->json('winners')->nullable();
-    //         $table->string('organizer')->nullable();
-    //         $table->decimal('amount', 10, 2)->default(0);
-    //         $table->date('date');
-    //         $table->enum('status', ['Pending', 'Completed'])->default('Pending');
-
     public function prizeDistribution($id)
     {
 
@@ -96,14 +85,14 @@ class EventService
 
         if ($event->sport_type == 'single') {
 
-            Earning::create([
+            $admin_earning = Earning::create([
                 'event_name' => $event->title,
                 'event_type' => $event->sport_type,
                 'total_entries' => $event->number_of_player_required * $event->entry_fee,
                 'commission' => ($event->number_of_player_required * $event->entry_fee) * 0.1,
             ]);
 
-            Payment::create([
+            $organizer_payment = Payment::create([
                 'user_id' => $organizer->id,
                 'role' => $organizer->role,
                 'event_id' => $event->id,
@@ -115,7 +104,7 @@ class EventService
             ]);
 
 
-            Payment::create([
+            $player_payment = Payment::create([
                 'event_id' => $event->id,
                 'event_name' => $event->title,
                 'event_type' => $event->sport_type,
@@ -125,14 +114,14 @@ class EventService
             ]);
 
         } else {
-            Earning::create([
+            $admin_earning = Earning::create([
                 'event_name' => $event->title,
                 'event_type' => $event->sport_type,
                 'total_entries' => $event->number_of_team_required * $event->entry_fee,
                 'commission' => ($event->number_of_team_required * $event->entry_fee) * 0.1,
             ]);
 
-            Payment::create([
+            $organizer_payment = Payment::create([
                 'user_id' => $organizer->id,
                 'role' => $organizer->role,
                 'event_id' => $event->id,
@@ -143,8 +132,7 @@ class EventService
                 'date' => Carbon::now()->format('Y-m-d')
             ]);
 
-
-            Payment::create([
+            $player_payment = Payment::create([
                 'event_id' => $event->id,
                 'event_name' => $event->title,
                 'event_type' => $event->sport_type,
@@ -153,5 +141,11 @@ class EventService
                 'date' => Carbon::now()->format('Y-m-d')
             ]);
         }
+
+        return [
+            'admin_earning' => $admin_earning,
+            'organizer_payment' => $organizer_payment,
+            'player_payment' => $player_payment,
+        ];
     }
 }

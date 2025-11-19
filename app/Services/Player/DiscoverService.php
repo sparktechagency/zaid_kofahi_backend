@@ -10,6 +10,7 @@ use App\Models\TeamMember;
 use App\Models\Winner;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -19,13 +20,56 @@ class DiscoverService
     {
         //
     }
-    public function getEvents(?int $per_page)
+    public function getEvents1(?int $per_page, ?string $search, ?string $filter)
     {
         $events = Event::where('status', '!=', 'Pending Payment')->latest()->paginate($per_page ?? 10);
 
         foreach ($events as $event) {
             $event->prize_distribution = json_decode($event->prize_distribution);
             $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+        }
+
+        return $events;
+    }
+    public function getEvents(?int $per_page, ?string $search, ?string $filter)
+    {
+        $events = Event::query()
+            ->where('status', '!=', 'Pending Payment');
+
+        if (!empty($search)) {
+            $events->where('title', 'LIKE', '%' . $search . '%');
+        }
+
+        if (!empty($filter)) {
+
+            if ($filter === 'today') {
+                $events->whereDate('created_at', Carbon::today());
+
+            } elseif ($filter === 'tomorrow') {
+                $events->whereDate('created_at', Carbon::tomorrow());
+
+            } elseif ($filter === 'upcoming') {
+                $events->where('status', 'Upcoming');
+
+            } elseif ($filter === 'weekend') {
+                // $events->whereIn(DB::raw('DAYOFWEEK(created_at)'), [6, 7]);
+
+                $events->whereBetween('created_at', [
+                    Carbon::now()->startOfWeek(), // Monday
+                    Carbon::now()->endOfWeek()    // Sunday
+                ]);
+
+            }
+        }
+
+        $events = $events->latest()->paginate($per_page ?? 10);
+
+        foreach ($events as $event) {
+            $event->prize_distribution = json_decode($event->prize_distribution);
+
+            if ($event->time) {
+                $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+            }
         }
 
         return $events;
@@ -193,7 +237,6 @@ class DiscoverService
             ],
         ];
     }
-
     public function createCashRequest($data)
     {
         $cash = Cash::create([

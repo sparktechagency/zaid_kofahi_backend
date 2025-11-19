@@ -18,7 +18,7 @@ class DiscoverController extends Controller
     public function getEvents(Request $request)
     {
         try {
-            $events = $this->discoverService->getEvents($request->per_page);
+            $events = $this->discoverService->getEvents($request->per_page,$request->search,$request->filter);
             return $this->sendResponse($events, 'All events successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

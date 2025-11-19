@@ -28,7 +28,7 @@ class PaymentController extends Controller
     {
         try {
             $result = $this->paymentService->confirmPayment($id);
-            return $this->sendResponse($result, 'Payment list successfully retrieved.');
+            return $this->sendResponse($result, 'Payment confirmed successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
