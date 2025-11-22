@@ -46,7 +46,7 @@ class DiscoverService
                 $events->whereDate('created_at', Carbon::today());
 
             } elseif ($filter === 'tomorrow') {
-                $events->whereDate('created_at', Carbon::tomorrow());
+                $events->whereDate('starting_date', Carbon::tomorrow());
 
             } elseif ($filter === 'upcoming') {
                 $events->where('status', 'Upcoming');
