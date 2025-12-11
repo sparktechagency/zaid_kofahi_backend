@@ -22,7 +22,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => 'required|string|in:PLAYER,ORGANIZER,ADMIN,FINANCE,SUPPORT',
+            // 'role' => 'required|string|in:PLAYER,ORGANIZER,ADMIN,FINANCE,SUPPORT',
             'email' => 'required|email|exists:users,email',
             'password' => 'required|string|min:8',
             'remember_me' => 'sometimes|boolean'

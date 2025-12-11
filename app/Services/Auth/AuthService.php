@@ -66,13 +66,13 @@ class AuthService
             return ['success' => false, 'message' => 'Your account is suspended. Please contact help center.', 'code' => 403];
         }
 
-        if ($user->role != $data['role']) {
-            return [
-                'success' => false,
-                'message' => 'Your are not ' . Str::lower($data['role']),
-                'code' => 403
-            ];
-        }
+        // if ($user->role != $data['role']) {
+        //     return [
+        //         'success' => false,
+        //         'message' => 'Your are not ' . Str::lower($data['role']),
+        //         'code' => 403
+        //     ];
+        // }
 
         if (!Hash::check($data['password'], $user->password)) {
             return ['success' => false, 'message' => 'Invalid password', 'code' => 401];
