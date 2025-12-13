@@ -14,8 +14,9 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('organizer_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
-            $table->text('description');
+            $table->longText('description');
             $table->string('sport_type');
+            $table->string('sport_name');
             $table->date('starting_date');
             $table->date('ending_date');
             $table->time('time');
@@ -26,7 +27,7 @@ return new class extends Migration {
             $table->decimal('entry_fee', 10, 2)->default(0);
             $table->decimal('prize_amount', 10, 2)->default(0);
             $table->json('prize_distribution');
-            $table->string('rules_guidelines');
+            $table->longText('rules_guidelines');
             $table->string('image');
             $table->enum('status', ['Pending Payment', 'Upcoming', 'Cancelled', 'Ongoing', 'Event Over', 'Awaiting Confirmation', 'Completed', ])->default('Pending Payment');
             $table->unsignedBigInteger('view')->default(0);

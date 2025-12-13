@@ -341,4 +341,8 @@ class EventService
         return $event_members;
 
     }
+
+    public function eventPay($id){
+        return 'event pay';
+    }
 }

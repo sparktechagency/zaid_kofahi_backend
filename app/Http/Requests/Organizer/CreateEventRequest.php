@@ -25,6 +25,7 @@ class CreateEventRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'sport_type' => 'required|string|in:single,team',
+            'sport_name' => 'required|string',
             'starting_date' => 'required|date',
             'ending_date' => 'required|date|after_or_equal:starting_date',
             'time' => 'required|date_format:h:i A',

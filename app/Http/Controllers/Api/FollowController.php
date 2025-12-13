@@ -66,10 +66,4 @@ class FollowController extends Controller
             ], 500);
         }
     }
-
-
-    public function testCommand()
-    {
-        return 'test';
-    }
 }

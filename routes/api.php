@@ -24,12 +24,10 @@ use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StaticPageController;
 use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\PayPalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-
-Route::post('/test-command',[FollowController::class,'testCommand']);
 
 
 Route::post('/register', [AuthController::class, 'register']);
