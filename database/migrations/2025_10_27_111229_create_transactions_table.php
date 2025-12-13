@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('payment_intent_id');
+            $table->string('payment_intent_id')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->unsignedInteger('event_id')->nullable();
-            $table->enum('type',['Deposit','Entry Fee','Platform Fee','Withdraw','Payout','Refund','Earning','Winning']);
+            $table->enum('type',['Deposit','Event Pay','Entry Fee','Platform Fee','Withdraw','Payout','Refund','Earning','Winning']);
+            $table->string('message')->nullable();
             $table->decimal('amount',10,2)->default(0);
             $table->timestamp('date');
             $table->enum('status',['Completed'])->default('Completed');

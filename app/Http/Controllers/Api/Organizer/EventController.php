@@ -116,4 +116,14 @@ class EventController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function eventPay($id)
+    {
+        try {
+            $result = $this->eventService->eventPay($id);
+            return $this->sendResponse($result, 'Event pay successfully.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
 }

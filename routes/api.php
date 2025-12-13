@@ -224,6 +224,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/selected-winner/{id?}', [EventController::class, 'selectedWinner']);
         Route::delete('/remove-event-member/{id?}', [EventController::class, 'remove']);
         Route::get('/get-event-members-list/{id?}', [EventController::class, 'getEventMembersList']);
+        Route::patch('/event-pay/{id?}', [EventController::class, 'eventPay']);
 
         // performance info
         Route::get('/performance-info', [PerformanceController::class, 'performanceInfo']);

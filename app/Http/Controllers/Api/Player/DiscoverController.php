@@ -66,7 +66,6 @@ class DiscoverController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function createCashRequest(Request $request,$id)
     {
         try {

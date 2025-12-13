@@ -160,7 +160,7 @@ class EventService
         }
 
         $events = $events->latest()->paginate($per_page ?? 10);
-        
+
         foreach ($events as $event) {
             $event->prize_distribution = json_decode($event->prize_distribution);
 
@@ -342,7 +342,52 @@ class EventService
 
     }
 
-    public function eventPay($id){
-        return 'event pay';
+    public function eventPay($id)
+    {
+        $event = Event::where('id', $id)->where('organizer_id', Auth::id())->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event not found.',
+            ]);
+        }
+
+        if ($event->status != 'Pending Payment') {
+            throw ValidationException::withMessages([
+                'message' => 'Event pay already paid.',
+            ]);
+        }
+
+        $prize_amount = $event->prize_amount;
+
+        $profile = Profile::where('user_id', Auth::id())->first();
+        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
+
+        if (!($prize_amount <= $available_balance)) {
+            throw ValidationException::withMessages([
+                'message' => 'You don' . "'" . 't have enough money in your wallet.',
+            ]);
+        }
+
+        $profile->increment('total_expence', $prize_amount);
+
+        $transaction = Transaction::create([
+            'user_id' => Auth::id(),
+            'event_id' => $event->id,
+            'type' => 'Event Pay',
+            'message' => '$' . $prize_amount . ' event prize deposite.',
+            'amount' => $event->prize_amount,
+            'data' => Carbon::now()->format('Y-m-d'),
+            'status' => 'Completed',
+        ]);
+
+        $event->status = 'Upcoming';
+        $event->save();
+
+        return [
+            'evnet' => $event,
+            'transaction' => $transaction
+        ];
+
     }
 }
