@@ -110,7 +110,6 @@ class StripeController extends Controller
     public function paymentIntent(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'event_id' => 'required|numeric|exists:events,id',
             'amount' => 'required|numeric',
             'payment_method_types' => 'required|string',
         ]);
@@ -134,7 +133,6 @@ class StripeController extends Controller
                 'confirm' => true,
                 'metadata' => [
                     'user_id' => Auth::id(),
-                    'event_id' => $request->event_id,
                 ],
             ]);
 
@@ -180,7 +178,8 @@ class StripeController extends Controller
                         'user_id' => Auth::id(),
                         'event_id' => $event->id,
                         'type' => 'Deposit',
-                        'amount' => $event->prize_amount,
+                        'message' => '$' . ($paymentIntent->amount / 100) . ' deposite in your wallet.',
+                        'amount' => $paymentIntent->amount / 100,
                         'data' => Carbon::now()->format('Y-m-d'),
                         'status' => 'Completed',
                     ]);

@@ -30,7 +30,7 @@ class EventService
             $data['image'] = '/storage/' . $path;
         }
 
-        $data['time'] = Carbon::createFromFormat('h:i A', $data['time'])->format('H:i');  // 15:00
+        $data['time'] = Carbon::createFromFormat('g:i A', $data['time'])->format('H:i');  // 15:00
 
         return Event::create($data);
     }
@@ -165,7 +165,7 @@ class EventService
             $event->prize_distribution = json_decode($event->prize_distribution);
 
             if (!empty($event->time)) {
-                $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+                $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('g:i A');
             }
         }
 

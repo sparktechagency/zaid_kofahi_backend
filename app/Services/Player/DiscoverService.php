@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Profile;
 use App\Models\TeamMember;
+use App\Models\Transaction;
 use App\Models\Winner;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -20,17 +21,7 @@ class DiscoverService
     {
         //
     }
-    public function getEvents1(?int $per_page, ?string $search, ?string $filter)
-    {
-        $events = Event::where('status', '!=', 'Pending Payment')->latest()->paginate($per_page ?? 10);
 
-        foreach ($events as $event) {
-            $event->prize_distribution = json_decode($event->prize_distribution);
-            $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
-        }
-
-        return $events;
-    }
     public function getEvents(?int $per_page, ?string $search, ?string $filter)
     {
         $events = Event::query()
@@ -65,11 +56,36 @@ class DiscoverService
         $events = $events->latest()->paginate($per_page ?? 10);
 
         foreach ($events as $event) {
-            $event->prize_distribution = json_decode($event->prize_distribution);
 
-            if ($event->time) {
-                $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+            $event->prize_distribution = json_decode($event->prize_distribution);
+            $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+
+            $joined_players = collect();
+            $joined_teams = collect();
+
+            if ($event->sport_type === 'single') {
+                $joined_players = EventMember::with([
+                    'player' => function ($q) {
+                        $q->select('id', 'full_name', 'user_name', 'avatar');
+                    }
+                ])->where('event_id', $event->id)->get();
+            } else {
+                $joined_teams = EventMember::with([
+                    'team' => function ($q) {
+                        $q->select('id', 'name')
+                            ->with(['members.player:id,full_name,user_name,role,avatar']);
+                    }
+                ])->where('event_id', $event->id)->get();
+
+                $joined_teams->each(function ($eventMember) {
+                    if ($eventMember->team) {
+                        $eventMember->team->team_member_count = $eventMember->team->members->count();
+                    }
+                });
             }
+
+            $event->max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
+            $event->joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
         }
 
         return $events;
@@ -106,7 +122,38 @@ class DiscoverService
             ]);
         }
 
-        Profile::where('user_id', Auth::id())->increment('total_event_joined', 1);
+        $joined_players = collect();
+        $joined_teams = collect();
+
+        if ($event->sport_type === 'single') {
+            $joined_players = EventMember::with([
+                'player' => function ($q) {
+                    $q->select('id', 'full_name', 'user_name', 'avatar');
+                }
+            ])->where('event_id', $event->id)->get();
+        } else {
+            $joined_teams = EventMember::with([
+                'team' => function ($q) {
+                    $q->select('id', 'name')
+                        ->with(['members.player:id,full_name,user_name,role,avatar']);
+                }
+            ])->where('event_id', $event->id)->get();
+
+            $joined_teams->each(function ($eventMember) {
+                if ($eventMember->team) {
+                    $eventMember->team->team_member_count = $eventMember->team->members->count();
+                }
+            });
+        }
+
+        $max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
+        $joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
+
+        if ($max == $joined) {
+            throw ValidationException::withMessages([
+                'message' => 'You can' . "'" . 't join because the event is already full.',
+            ]);
+        }
 
         $join = EventMember::create([
             'player_id' => $player_id ?? Auth::id(),
@@ -114,7 +161,35 @@ class DiscoverService
             'joining_date' => Carbon::today(),
         ]);
 
-        return $join;
+        Profile::where('user_id', Auth::id())->increment('total_event_joined', 1);
+
+        $entry_fee = $event->entry_fee;
+
+        $profile = Profile::where('user_id', Auth::id())->first();
+        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
+
+        if (!($entry_fee <= $available_balance)) {
+            throw ValidationException::withMessages([
+                'message' => 'You don' . "'" . 't have enough money in your wallet.',
+            ]);
+        }
+
+        $profile->increment('total_expence', $entry_fee);
+
+        $transaction = Transaction::create([
+            'user_id' => Auth::id(),
+            'event_id' => $event->id,
+            'type' => 'Entry Fee',
+            'message' => '$' . $entry_fee . ' entry fee given.',
+            'amount' => $event->entry_fee,
+            'data' => Carbon::now()->format('Y-m-d'),
+            'status' => 'Completed',
+        ]);
+
+        return [
+            'join' => $join,
+            'transaction' => $transaction
+        ];
     }
     public function teamJoin($id, $team_id)
     {
@@ -131,8 +206,6 @@ class DiscoverService
                 'message' => 'This event not for team join.',
             ]);
         }
-
-
 
         if (!($event->number_of_player_required_in_a_team <= TeamMember::where('team_id', $team_id)->count())) {
 
@@ -159,23 +232,86 @@ class DiscoverService
             ]);
         }
 
-        Profile::where('user_id', Auth::id())->increment('total_event_joined', 1);
-
         $join = EventMember::create([
             'team_id' => $team_id,
             'event_id' => $id,
             'joining_date' => Carbon::today(),
         ]);
 
-        return $join;
+        Profile::where('user_id', Auth::id())->increment('total_event_joined', 1);
+
+        $entry_fee = $event->entry_fee;
+
+        $profile = Profile::where('user_id', Auth::id())->first();
+        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
+
+        if (!($entry_fee <= $available_balance)) {
+            throw ValidationException::withMessages([
+                'message' => 'You don' . "'" . 't have enough money in your wallet.',
+            ]);
+        }
+
+        $profile->increment('total_expence', $entry_fee);
+
+        $transaction = Transaction::create([
+            'user_id' => Auth::id(),
+            'event_id' => $event->id,
+            'type' => 'Entry Fee',
+            'message' => '$' . $entry_fee . ' entry fee given.',
+            'amount' => $event->entry_fee,
+            'data' => Carbon::now()->format('Y-m-d'),
+            'status' => 'Completed',
+        ]);
+
+        return [
+            'join' => $join,
+            'transaction' => $transaction
+        ];
     }
     public function viewEvent($id)
     {
-        $event = Event::where('id', $id)
+        $event = Event::with([
+            'organizer' => function ($q) {
+                $q->select('id', 'full_name', 'role', 'avatar');
+            }
+        ])->where('id', $id)
             ->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event not found.',
+            ]);
+        }
 
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+
+        $joined_players = collect();
+        $joined_teams = collect();
+
+        if ($event->sport_type === 'single') {
+            $joined_players = EventMember::with([
+                'player' => function ($q) {
+                    $q->select('id', 'full_name', 'user_name', 'avatar');
+                }
+            ])->where('event_id', $event->id)->get();
+        } else {
+            $joined_teams = EventMember::with([
+                'team' => function ($q) {
+                    $q->select('id', 'name')
+                        ->with(['members.player:id,full_name,user_name,role,avatar']);
+                }
+            ])->where('event_id', $event->id)->get();
+
+            $joined_teams->each(function ($eventMember) {
+                if ($eventMember->team) {
+                    $eventMember->team->team_member_count = $eventMember->team->members->count();
+                }
+            });
+        }
+
+        $event->max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
+        $event->joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
 
         return $event;
     }
@@ -189,10 +325,8 @@ class DiscoverService
             ]);
         }
 
-
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
-
 
         $joined_players = collect();
         $joined_teams = collect();
@@ -217,7 +351,6 @@ class DiscoverService
                 }
             });
         }
-
 
         $max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
         $joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
