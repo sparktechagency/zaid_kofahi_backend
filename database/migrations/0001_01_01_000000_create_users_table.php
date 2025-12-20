@@ -26,6 +26,8 @@ return new class extends Migration {
             $table->longText('phone_number')->nullable();
             $table->string('address')->nullable();
             $table->string('avatar')->nullable();
+            $table->string('instagram_link')->nullable();
+            $table->string('country')->nullable();
             $table->string('google_id')->nullable();
             $table->rememberToken();
             $table->timestamps();

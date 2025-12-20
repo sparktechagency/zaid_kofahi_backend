@@ -21,6 +21,8 @@ class SettingsService
             'user_name',
             'phone_number',
             'address',
+            'instagram_link',
+            'country'
         ])->toArray();
 
         if (isset($data['avatar'])) {

@@ -30,6 +30,8 @@ class SettingsRequest extends FormRequest
             'user_name' => "nullable|string|max:255|unique:users,user_name,{$userId}",
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
+            'instagram_link' => 'nullable|url|string|max:500',
+            'country' => 'nullable|string|max:500',
         ];
 
     }
