@@ -34,6 +34,7 @@ class AuthService
             'slug' => Str::random(),
             'role' => $data['role'],
             'full_name' => $data['full_name'],
+            'country' => $data['country'],
             'user_name' => $data['full_name'],
             'email' => $data['email'],
             // 'phone_number' => $data['phone_number'],

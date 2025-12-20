@@ -25,6 +25,7 @@ class RegisterRequest extends FormRequest
             'role' => 'required|string|in:PLAYER,ORGANIZER',
             'full_name' => 'required|string|max:255',
             'user_name' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users,email|max:255',
             'password' => 'required|string|min:8|confirmed',
         ];
