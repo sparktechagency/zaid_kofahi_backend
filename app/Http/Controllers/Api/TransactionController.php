@@ -21,7 +21,7 @@ class TransactionController extends Controller
     public function getTransactions(Request $request)
     {
         try {
-            $events = $this->transactionService->getTransactions($request->per_page);
+            $events = $this->transactionService->getTransactions($request->filter,$request->per_page);
             return $this->sendResponse($events, in_array(Auth::user()->role, ['ADMIN']) ? 'All withdraws and transactions successfully retrieved.' : 'Your all transactions successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

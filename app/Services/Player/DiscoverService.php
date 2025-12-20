@@ -394,7 +394,6 @@ class DiscoverService
 
         return $cash;
     }
-
     public function showBranches()
     {
 
