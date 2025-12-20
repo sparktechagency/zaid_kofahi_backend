@@ -9,18 +9,29 @@ use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
 {
-     protected $leaderboardService;
+    protected $leaderboardService;
     public function __construct(LeaderboardService $leaderboardService)
     {
         $this->leaderboardService = $leaderboardService;
     }
-     public function leaderboardInfo(Request $request)
+    public function leaderboardInfo(Request $request)
     {
         try {
-            $members = $this->leaderboardService->leaderboardInfo($request->filter,$request->search);
+            $members = $this->leaderboardService->leaderboardInfo($request->filter, $request->search, $request->event_id);
             return $this->sendResponse($members, 'Leader board information successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function getSportNamesOnlyYouJoin(Request $request)
+    {
+        try {
+            $members = $this->leaderboardService->getSportNamesOnlyYouJoin($request->event_id);
+            return $this->sendResponse($members, 'Get sport names only you join successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

@@ -62,15 +62,15 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/withdraw', [TransactionController::class, 'withdraw']);
 
     // follow unfollow toggle
-    Route::post('/follow-unfollow-toggle/{id?}',[FollowController::class,'followUnfollowToggle']);
-    
+    Route::post('/follow-unfollow-toggle/{id?}', [FollowController::class, 'followUnfollowToggle']);
+
 
     // connected account 
-    Route::post('create-connected-account',[StripeController::class,'createConnectedAccount']);
+    Route::post('create-connected-account', [StripeController::class, 'createConnectedAccount']);
 
     // payment intent and success
-    Route::post('/payment-intent',[StripeController::class,'paymentIntent']);
-    Route::post('/payment-success',[StripeController::class,'paymentSuccess']);
+    Route::post('/payment-intent', [StripeController::class, 'paymentIntent']);
+    Route::post('/payment-success', [StripeController::class, 'paymentSuccess']);
 
     // notification
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']);
@@ -118,18 +118,18 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
 
         // payment
-        Route::get('/payment-list',[PaymentController::class,'paymentList']);
-        Route::patch('/confirm-payment/{id?}',[PaymentController::class,'confirmPayment']);
+        Route::get('/payment-list', [PaymentController::class, 'paymentList']);
+        Route::patch('/confirm-payment/{id?}', [PaymentController::class, 'confirmPayment']);
 
 
         // earning
-        Route::get('/earning-list',[EarningController::class,'earningList']);
+        Route::get('/earning-list', [EarningController::class, 'earningList']);
 
 
         // refund
-        Route::get('/refund-list',[RefundController::class,'refundList']);
-        Route::patch('/confirm-refund/{id?}',[RefundController::class,'confirmRefund']);
-        Route::delete('/cancel-refund/{id?}',[RefundController::class,'cancelRefund']);
+        Route::get('/refund-list', [RefundController::class, 'refundList']);
+        Route::patch('/confirm-refund/{id?}', [RefundController::class, 'confirmRefund']);
+        Route::delete('/cancel-refund/{id?}', [RefundController::class, 'cancelRefund']);
 
         // leaderboard info 
         Route::get('/leader-board-info', [AdminLeaderBoardController::class, 'leaderBoardInfo']);
@@ -146,17 +146,17 @@ Route::middleware('auth:api')->group(function () {
         // transaction
         Route::patch('/request-accept/{id?}', [TransactionController::class, 'requestAccept']);
 
-         // payment
-        Route::get('/payment-list',[PaymentController::class,'paymentList']);
-        Route::patch('/confirm-payment/{id?}',[PaymentController::class,'confirmPayment']);
+        // payment
+        Route::get('/payment-list', [PaymentController::class, 'paymentList']);
+        Route::patch('/confirm-payment/{id?}', [PaymentController::class, 'confirmPayment']);
 
         // earning
-        Route::get('/earning-list',[EarningController::class,'earningList']);
+        Route::get('/earning-list', [EarningController::class, 'earningList']);
 
         // refund
-        Route::get('/refund-list',[RefundController::class,'refundList']);
-        Route::patch('/confirm-refund/{id?}',[RefundController::class,'confirmRefund']);
-        Route::delete('/cancel-refund/{id?}',[RefundController::class,'cancelRefund']);
+        Route::get('/refund-list', [RefundController::class, 'refundList']);
+        Route::patch('/confirm-refund/{id?}', [RefundController::class, 'confirmRefund']);
+        Route::delete('/cancel-refund/{id?}', [RefundController::class, 'cancelRefund']);
 
     });
 
@@ -164,7 +164,7 @@ Route::middleware('auth:api')->group(function () {
         // dashboard
         Route::get('/dashboard-info', [DashboardController::class, 'dashboardInfo']);
 
-         // user
+        // user
         Route::get('/get-users', [UserController::class, 'getUsers']);
         Route::get('/view-user/{id?}', [UserController::class, 'viewUser']);
         Route::patch('/block-unblock-toggle/{id?}', [UserController::class, 'blockUnblockToggle']);
@@ -181,7 +181,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/get-teams', [TeamController::class, 'getTeams']);
         Route::get('/view-team/{id?}', [TeamController::class, 'viewTeam']);
 
-         // disputes
+        // disputes
         Route::get('/get-disputes', [DisputeController::class, 'getDisputes']);
         Route::patch('/report-solve/{id?}', [DisputeController::class, 'reportSolve']);
     });
@@ -194,13 +194,14 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
         Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
         Route::post('/create-cash-request/{id?}', [DiscoverController::class, 'createCashRequest']);
-         Route::get('/show-branches', [DiscoverController::class, 'showBranches']);
+        Route::get('/show-branches', [DiscoverController::class, 'showBranches']);
 
         // near me event
         Route::get('/near-me-events', [NearMeController::class, 'nearMeEvents']);
 
         // leaderboard info
         Route::get('/leaderboard-info', [LeaderboardController::class, 'leaderboardInfo']);
+        Route::get('/get-sport-names-only-you-join', [LeaderboardController::class, 'getSportNamesOnlyYouJoin']);
 
         // profile
         Route::post('/create-team', [ProfileContrller::class, 'createTeam']);
