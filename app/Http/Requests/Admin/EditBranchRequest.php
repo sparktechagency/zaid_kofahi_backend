@@ -23,7 +23,9 @@ class EditBranchRequest extends FormRequest
     {
         return [
             'name' => 'nullable|string|max:100',
-            'address' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
+            'latitude' => 'nullable|string|max:255',
+            'longitude' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:100',
             'working_hour' => 'nullable|string|max:50',
         ];

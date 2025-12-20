@@ -14,6 +14,7 @@ class BranchService
         //
     }
 
+
     public function getBranches()
     {
         return Branch::all();
@@ -34,7 +35,9 @@ class BranchService
         $branch = Branch::findOrFail($id);
         
         $branch->name = $data['name'] ?? $branch->name;
-        $branch->address = $data['address'] ?? $branch->address;
+        $branch->location = $data['location'] ?? $branch->location;
+        $branch->latitude = $data['latitude'] ?? $branch->latitude;
+        $branch->longitude = $data['longitude'] ?? $branch->longitude;
         $branch->country = $data['country'] ?? $branch->country;
         $branch->working_hour = $data['working_hour'] ?? $branch->working_hour;
         $branch->save();

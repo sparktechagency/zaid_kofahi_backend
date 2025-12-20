@@ -194,7 +194,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
         Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
         Route::post('/create-cash-request/{id?}', [DiscoverController::class, 'createCashRequest']);
-         Route::get('/show-branches', [BranchController::class, 'getBranches']);
+         Route::get('/show-branches', [DiscoverController::class, 'showBranches']);
 
         // near me event
         Route::get('/near-me-events', [NearMeController::class, 'nearMeEvents']);

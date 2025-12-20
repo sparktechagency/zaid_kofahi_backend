@@ -86,4 +86,14 @@ class DiscoverController extends Controller
         }
     }
 
+    public function showBranches(Request $request)
+    {
+        try {
+            $events = $this->discoverService->showBranches();
+            return $this->sendResponse($events, 'Show branches successfully retrieved.');
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

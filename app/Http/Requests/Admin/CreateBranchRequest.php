@@ -23,7 +23,9 @@ class CreateBranchRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:100|unique:branches,name',
-            'address' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'latitude' => 'required|string|max:255',
+            'longitude' => 'required|string|max:255',
             'country' => 'required|string|max:100',
             'working_hour' => 'required|string|max:50',
         ];

@@ -2,6 +2,7 @@
 
 namespace App\Services\Player;
 
+use App\Models\Branch;
 use App\Models\Cash;
 use App\Models\Event;
 use App\Models\EventMember;
@@ -9,6 +10,7 @@ use App\Models\Follow;
 use App\Models\Profile;
 use App\Models\TeamMember;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\Winner;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -391,5 +393,15 @@ class DiscoverService
         ]);
 
         return $cash;
+    }
+
+    public function showBranches()
+    {
+
+        $user = User::find(Auth::id());
+
+        $branches = Branch::where('country',$user->country)->latest()->get();
+
+        return $branches;
     }
 }
