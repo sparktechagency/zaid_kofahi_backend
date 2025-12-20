@@ -110,8 +110,8 @@ Route::middleware('auth:api')->group(function () {
         // cash varification
         Route::get('/get-cash-requests', [CashController::class, 'getCashRequests']);
         Route::patch('/cash-verification/{id?}', [CashController::class, 'cashVerification']);
-        Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
-        Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
+        Route::post('/cash-single-join/{id?}', [CashController::class, 'cashSingleJoin']);
+        Route::post('/cash-team-join/{id?}', [CashController::class, 'cashTeamJoin']);
         Route::delete('/delete-request/{id?}', [CashController::class, 'deleteRequest']);
 
         // transaction
@@ -194,6 +194,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/single-join/{id?}', [DiscoverController::class, 'singleJoin']);
         Route::post('/team-join/{id?}', [DiscoverController::class, 'teamJoin']);
         Route::post('/create-cash-request/{id?}', [DiscoverController::class, 'createCashRequest']);
+         Route::get('/show-branches', [BranchController::class, 'getBranches']);
 
         // near me event
         Route::get('/near-me-events', [NearMeController::class, 'nearMeEvents']);

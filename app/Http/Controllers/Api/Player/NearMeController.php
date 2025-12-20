@@ -9,18 +9,18 @@ use Illuminate\Http\Request;
 
 class NearMeController extends Controller
 {
-     protected $nearMeService;
+    protected $nearMeService;
     public function __construct(NearMeService $nearMeService)
     {
         $this->nearMeService = $nearMeService;
     }
-     public function nearMeEvents()
+    public function nearMeEvents(Request $request)
     {
         try {
-            $members = $this->nearMeService->nearMeEvents();
-            return $this->sendResponse($members, 'Near me events successfully retrieved.');
+            $events = $this->nearMeService->nearMeEvents($request->latitude, $request->longitude,$request->limit,$request->search);
+            return $this->sendResponse($events, 'Get nearest events fetched successfully');
         } catch (Exception $e) {
-            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+            return $this->sendError('Failed to fetch nearest events', ['error' => $e->getMessage()], 500);
         }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Profile;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -167,47 +168,25 @@ class StripeController extends Controller
             $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
             if ($paymentIntent->status === 'succeeded') {  // succeeded or requires_payment_method
 
-                if (Auth::user()->role == 'ORGANIZER') {
-                    $event = Event::where('id', $paymentIntent->metadata->event_id)->first();
+                $profile = Profile::where('user_id', Auth::id())->first();
+                $profile->increment('total_balance', $paymentIntent->amount / 100);
 
-                    $event->status = 'Upcoming';
-                    $event->save();
+                $transaction = Transaction::create([
+                    'payment_intent_id' => $paymentIntent->id,
+                    'user_id' => Auth::id(),
+                    'type' => 'Deposit',
+                    'message' => '$' . ($paymentIntent->amount / 100) . ' deposite in your wallet.',
+                    'amount' => $paymentIntent->amount / 100,
+                    'data' => Carbon::now()->format('Y-m-d'),
+                    'status' => 'Completed',
+                ]);
 
-                    $transaction = Transaction::create([
-                        'payment_intent_id' => $paymentIntent->id,
-                        'user_id' => Auth::id(),
-                        'event_id' => $event->id,
-                        'type' => 'Deposit',
-                        'message' => '$' . ($paymentIntent->amount / 100) . ' deposite in your wallet.',
-                        'amount' => $paymentIntent->amount / 100,
-                        'data' => Carbon::now()->format('Y-m-d'),
-                        'status' => 'Completed',
-                    ]);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Money deposite successfully in your wallet.',
+                    'data' => $transaction,
+                ], 200);
 
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Event deposite successfully completed.',
-                        'data' => $transaction,
-                    ], 200);
-                } else {
-                    $event = Event::where('id', $paymentIntent->metadata->event_id)->first();
-
-                    $transaction = Transaction::create([
-                        'payment_intent_id' => $paymentIntent->id,
-                        'user_id' => Auth::id(),
-                        'event_id' => $event->id,
-                        'type' => 'Entry Fee',
-                        'amount' => $event->entry_fee,
-                        'data' => Carbon::now()->format('Y-m-d'),
-                        'status' => 'Completed',
-                    ]);
-
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Entry fee successfully completed.',
-                        'data' => $transaction,
-                    ], 200);
-                }
 
             } else {
                 return response()->json([

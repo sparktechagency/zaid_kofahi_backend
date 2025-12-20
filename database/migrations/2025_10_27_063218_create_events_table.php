@@ -21,6 +21,8 @@ return new class extends Migration {
             $table->date('ending_date');
             $table->time('time');
             $table->string('location');
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
             $table->unsignedInteger('number_of_player_required')->default(0);
             $table->unsignedInteger('number_of_team_required')->default(0);
             $table->unsignedInteger('number_of_player_required_in_a_team')->default(0);
@@ -29,7 +31,7 @@ return new class extends Migration {
             $table->json('prize_distribution');
             $table->longText('rules_guidelines');
             $table->string('image');
-            $table->enum('status', ['Pending Payment', 'Upcoming', 'Cancelled', 'Ongoing', 'Event Over', 'Awaiting Confirmation', 'Completed', ])->default('Pending Payment');
+            $table->enum('status', ['Pending Payment', 'Upcoming', 'Cancelled', 'Ongoing', 'Event Over', 'Awaiting Confirmation', 'Completed',])->default('Pending Payment');
             $table->unsignedBigInteger('view')->default(0);
             $table->unsignedBigInteger('share')->default(0);
             $table->timestamps();

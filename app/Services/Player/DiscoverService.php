@@ -5,6 +5,7 @@ namespace App\Services\Player;
 use App\Models\Cash;
 use App\Models\Event;
 use App\Models\EventMember;
+use App\Models\Follow;
 use App\Models\Profile;
 use App\Models\TeamMember;
 use App\Models\Transaction;
@@ -312,6 +313,15 @@ class DiscoverService
 
         $event->max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
         $event->joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
+
+        $event->is_follow = Follow::where('follower_id', $event->organizer_id)->where('user_id', Auth::id())->exists();
+
+        $event->is_join = EventMember::where('event_id', $event->id)
+            ->where(function ($q) {
+                $q->where('player_id', Auth::id())
+                    ->orWhere('team_id', Auth::id());
+            })
+            ->exists();
 
         return $event;
     }

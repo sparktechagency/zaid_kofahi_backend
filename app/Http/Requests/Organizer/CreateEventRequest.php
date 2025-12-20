@@ -31,6 +31,8 @@ class CreateEventRequest extends FormRequest
             'time' => 'required|date_format:g:i A',
             // 'time' => 'required|regex:/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/',
             'location' => 'required|string|max:255',
+            'latitude' => 'required|string|max:255',
+            'longitude' => 'required|string|max:255',
             'entry_fee' => 'required|numeric|min:0',
             'prize_amount' => 'required|numeric|min:0',
             'prize_distribution' => 'required',

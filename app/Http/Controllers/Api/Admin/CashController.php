@@ -45,4 +45,23 @@ class CashController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function cashSingleJoin(Request $request, $id)
+    {
+        try {
+            $event = $this->cashServece->cashSingleJoin($request->player_id,$id);
+            return $this->sendResponse($event, 'Single join successfully.', true, 201);
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+    public function cashTeamJoin(Request $request, $id)
+    {
+        try {
+            $event = $this->cashServece->cashTeamJoin($id, $request->team_id);
+            return $this->sendResponse($event, 'Team join successfully.', true, 201);
+        } catch (Exception $e) {
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
 }
