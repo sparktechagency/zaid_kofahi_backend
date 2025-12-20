@@ -185,7 +185,6 @@ class LeaderboardService
         ];
     }
 
-
     public function getSportNamesOnlyYouJoin1($event_id)
     {
         $event_members = EventMember::latest()->get();
@@ -212,7 +211,7 @@ class LeaderboardService
 
 
 
-        return $arr1 . marge($arr2);
+        return $arr1;
 
     }
 
@@ -239,6 +238,5 @@ class LeaderboardService
 
         return Event::whereIn('id', $eventIds)->select('id', 'organizer_id', 'sport_type', 'sport_name')->get();
     }
-
 
 }

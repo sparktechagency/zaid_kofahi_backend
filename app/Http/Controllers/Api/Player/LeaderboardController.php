@@ -27,7 +27,7 @@ class LeaderboardController extends Controller
     public function getSportNamesOnlyYouJoin(Request $request)
     {
         try {
-            $members = $this->leaderboardService->getSportNamesOnlyYouJoin($request->event_id);
+            $members = $this->leaderboardService->getSportNamesOnlyYouJoin();
             return $this->sendResponse($members, 'Get sport names only you join successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
