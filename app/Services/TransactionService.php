@@ -51,7 +51,7 @@ class TransactionService
         ];
     }
 
-    public function getTransactions(?string $filter, ?int $per_page)
+    public function getTransactions2(?string $filter, ?int $per_page)
     {
         $days = in_array($filter, ['7', '15', '30']) ? (int) $filter : null;
 
@@ -65,7 +65,7 @@ class TransactionService
                 ->latest()
                 ->paginate($per_page ?? 10);
 
-            $withdraws = Withdraw::query()
+            $withdraws = Withdraw::with('user')->query()
                 ->when($days, function ($q) use ($days) {
                     $q->whereDate('date', '>=', Carbon::now()->subDays($days));
                 })
@@ -107,6 +107,64 @@ class TransactionService
             'transactions_histories' => $transactions
         ];
     }
+
+    public function getTransactions(?string $filter, ?int $per_page)
+    {
+        $days = in_array($filter, ['7', '15', '30']) ? (int) $filter : null;
+
+        /* ================= ADMIN / FINANCE / SUPPORT ================= */
+        if (in_array(Auth::user()->role, ['ADMIN', 'FINANCE', 'SUPPORT'])) {
+
+            $transactions = Transaction::with('user:id,full_name')->when($days, function ($q) use ($days) {
+                $q->whereDate('date', '>=', Carbon::now()->subDays($days));
+            })
+                ->latest()
+                ->paginate($per_page ?? 10);
+
+            $withdraws = Withdraw::with('user:id,full_name')
+                ->when($days, function ($q) use ($days) {
+                    $q->whereDate('date', '>=', Carbon::now()->subDays($days));
+                })
+                ->latest()
+                ->paginate($per_page ?? 10);
+
+            return [
+                'withdraw_histories' => $withdraws,
+                'transactions_histories' => $transactions
+            ];
+        }
+
+        /* ================= PLAYER / USER ================= */
+        $transactions = Transaction::with('user:id,full_name')->where('user_id', Auth::id())
+            ->when($days, function ($q) use ($days) {
+                $q->whereDate('date', '>=', Carbon::now()->subDays($days));
+            })
+            ->latest()
+            ->paginate($per_page ?? 10);
+
+        foreach ($transactions as $transaction) {
+            $transaction->event_title = optional(
+                Event::find($transaction->event_id)
+            )->title ?? 'Event not found';
+
+            $transaction->date = $transaction->date
+                ? Carbon::parse($transaction->date)->format('M d, Y')
+                : 'Date not available';
+        }
+
+        $profile = Profile::where('user_id', Auth::id())->first();
+
+        $available_balance =
+            $profile->total_balance +
+            $profile->total_earning -
+            ($profile->total_expence + $profile->total_withdraw);
+
+        return [
+            'available_balance' => $available_balance,
+            'transactions_histories' => $transactions
+        ];
+    }
+
 
     public function withdraw($data)
     {

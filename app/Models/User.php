@@ -81,4 +81,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Event::class, 'organizer_id');
     }
+    public function withdraws()
+    {
+        return $this->hasMany(Withdraw::class);
+    }
 }
