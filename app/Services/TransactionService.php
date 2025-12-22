@@ -110,6 +110,23 @@ class TransactionService
 
     public function withdraw($data)
     {
+
+        $profile = Profile::find(Auth::id());
+
+        $available_balance = ($profile->total_balance + $profile->total_earning) - ($profile->total_expence + $profile->total_withdraw);
+
+        if ($data['amount'] > $available_balance) {
+            throw ValidationException::withMessages([
+                'message' => 'You do not have enough money in your wallet.',
+            ]);
+        }
+
+        if ($data['amount'] < 100) {
+            throw ValidationException::withMessages([
+                'message' => 'You cannot withdraw less than $100.',
+            ]);
+        }
+
         $withdraw = Withdraw::create([
             'user_id' => Auth::id(),
             'amount' => $data['amount'],
@@ -122,6 +139,12 @@ class TransactionService
     public function requestAccept($id)
     {
         $withdraw = Withdraw::where('id', $id)->first();
+
+        if (!$withdraw) {
+            throw ValidationException::withMessages([
+                'message' => 'Withdraw request id not found.',
+            ]);
+        }
 
         if ($withdraw->status == 'Completed') {
             throw ValidationException::withMessages([

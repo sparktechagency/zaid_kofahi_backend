@@ -55,7 +55,6 @@ class PaymentService
             return 'team';
         }
 
-
         return $payment;
     }
 }

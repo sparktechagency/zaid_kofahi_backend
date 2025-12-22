@@ -131,7 +131,7 @@ class AuthService
         } catch (Exception $e) {
             Log::error('OTP email failed: ' . $e->getMessage());
         }
-        return ['success' => true];
+         return ['success' => true,'otp'=>$otp];
     }
     public function forgotPassword(string $email): array
     {
@@ -156,7 +156,7 @@ class AuthService
         } catch (Exception $e) {
             Log::error('OTP email failed: ' . $e->getMessage());
         }
-        return ['success' => true];
+        return ['success' => true,'otp'=>$otp];
     }
     public function changePassword(string $newPassword): array
     {

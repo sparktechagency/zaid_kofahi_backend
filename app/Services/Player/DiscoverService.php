@@ -2,6 +2,7 @@
 
 namespace App\Services\Player;
 
+use App\Models\Activity;
 use App\Models\Branch;
 use App\Models\Cash;
 use App\Models\Event;
@@ -189,6 +190,13 @@ class DiscoverService
             'status' => 'Completed',
         ]);
 
+        Activity::create([
+            'date' => Carbon::now()->format('Y-m-d'),
+            'user' => 'Player',
+            'action' => 'Join Event',
+            'details' => 'Join ‘' . $event->title . '’ by paying ' . $entry_fee
+        ]);
+
         return [
             'join' => $join,
             'transaction' => $transaction
@@ -264,6 +272,13 @@ class DiscoverService
             'amount' => $event->entry_fee,
             'data' => Carbon::now()->format('Y-m-d'),
             'status' => 'Completed',
+        ]);
+
+        Activity::create([
+            'date' => Carbon::now()->format('Y-m-d'),
+            'user' => 'Player',
+            'action' => 'Join Event',
+            'details' => 'Join ‘' . $event->title . '’ by paying ' . $entry_fee
         ]);
 
         return [
@@ -399,7 +414,7 @@ class DiscoverService
 
         $user = User::find(Auth::id());
 
-        $branches = Branch::where('country',$user->country)->latest()->get();
+        $branches = Branch::where('country', $user->country)->latest()->get();
 
         return $branches;
     }

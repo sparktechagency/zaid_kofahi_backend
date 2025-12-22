@@ -188,7 +188,7 @@ class AuthController extends Controller
             if (!$result['success']) {
                 return $this->sendError($result['message'], [], $result['code']);
             }
-            return $this->sendResponse([], 'OTP resent to your email.');
+            return $this->sendResponse($result, 'OTP resent to your email.');
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }
@@ -201,7 +201,7 @@ class AuthController extends Controller
             if (!$result['success']) {
                 return $this->sendError($result['message'], [], $result['code']);
             }
-            return $this->sendResponse([], 'OTP sent to your email.');
+            return $this->sendResponse($result, 'OTP sent to your email.');
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }

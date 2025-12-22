@@ -32,5 +32,5 @@ class PaymentController extends Controller
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
-    }
+    } 
 }

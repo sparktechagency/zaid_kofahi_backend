@@ -21,7 +21,7 @@ class EventService
 
     public function getEvents()
     {
-        $events = Event::latest()->get();
+        $events = Event::with('organizer:id,full_name,user_name')->latest()->get();
 
         foreach ($events as $event) {
             $event->prize_distribution = json_decode($event->prize_distribution);
@@ -32,7 +32,7 @@ class EventService
 
     public function viewEvent($id)
     {
-        $event = Event::where('id', $id)
+        $event = Event::with('organizer:id,full_name,user_name')->where('id', $id)
             ->first();
 
         $event->prize_distribution = json_decode($event->prize_distribution);
