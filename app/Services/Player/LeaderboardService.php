@@ -107,13 +107,9 @@ class LeaderboardService
 
     public function leaderBoardInfo(?string $filter, ?string $search, ?int $event_id = null)
     {
-        // Base query
         $query = User::where('role', 'PLAYER')
             ->join('profiles', 'users.id', '=', 'profiles.user_id');
 
-        // ==============================
-        // Event-based filtering (optional)
-        // ==============================
         if ($event_id) {
 
             $event = Event::find($event_id);
@@ -145,22 +141,16 @@ class LeaderboardService
             }
         }
 
-        // ==============================
-        // Search by player name
-        // ==============================
         if (!empty($search)) {
             $query->where('users.full_name', 'LIKE', "%{$search}%");
         }
 
-        // ==============================
-        // Filter logic
-        // ==============================
         if ($filter === 'earnings') {
 
             $players = $query
                 ->orderByDesc('profiles.total_earning')
-                ->limit(3)
-                ->select('users.id', 'users.full_name', 'profiles.total_earning')
+                // ->limit(3)
+                ->select('users.id', 'users.full_name','users.user_name', 'profiles.total_earning')
                 ->get();
 
             return [
@@ -171,8 +161,8 @@ class LeaderboardService
 
             $players = $query
                 ->orderByDesc('profiles.total_event_joined')
-                ->limit(3)
-                ->select('users.id', 'users.full_name', 'profiles.total_event_joined')
+                // ->limit(3)
+                ->select('users.id', 'users.full_name','users.user_name', 'profiles.total_event_joined')
                 ->get();
 
             return [

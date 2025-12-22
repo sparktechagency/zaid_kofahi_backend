@@ -95,14 +95,11 @@ class EventController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-    public function remove($id)
+    public function remove(Request $request, $id)
     {
         try {
-            $remove = $this->eventService->remove($id);
-            if (!$remove) {
-                return $this->sendError('Event not found.', [], 404);
-            }
-            return $this->sendResponse([], 'Event member remove successfully.');
+            $remove = $this->eventService->remove($id , $request->event_id);
+            return $this->sendResponse([$remove], 'Event member remove successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

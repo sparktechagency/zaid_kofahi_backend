@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Models\Activity;
 use Carbon\Carbon;
 
 class DashboardService
@@ -21,7 +22,7 @@ class DashboardService
             'events' => '15',
             'service' => '15',
             'earning' => '15',
-            'recent_activities' => [],
+            'recent_activities' => Activity::latest()->get(),
         ];
 
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Organizer;
 
+use App\Models\Activity;
 use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Profile;
@@ -32,7 +33,16 @@ class EventService
 
         $data['time'] = Carbon::createFromFormat('g:i A', $data['time'])->format('H:i');  // 15:00
 
-        return Event::create($data);
+        $event = Event::create($data);
+
+        Activity::create([
+            'date'=> Carbon::now()->format('Y-m-d'),
+            'user' => 'Organizer',
+            'action' => 'Create Event',
+            'details' => 'Create ‘'.$event->title.'’ event'
+        ]);
+
+        return $event;
     }
     public function updateEvent1($id, $data)
     {
@@ -285,29 +295,52 @@ class EventService
         //     ]);
         // }
     }
-    public function remove($id)
+    public function remove($id, ?int $event_id)
     {
-        $event_member = EventMember::where('id', $id)->first();
+        $event = Event::find($event_id);
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event not found.',
+            ]);
+        }
 
+        $event_member = EventMember::where('id', $id)->where('event_id', $event_id)->first();
         if (!$event_member) {
             throw ValidationException::withMessages([
                 'message' => 'Event member not found.',
             ]);
         }
 
-        if ($event_member->player_id == null) {
-            $refund_amount = Event::where('id', $event_member->event_id)->first()->entry_free;
+        $refund_amount = $event->entry_fee;
 
+        if ($event->sport_type == 'team') {
             $team_owner_id = Team::where('id', $event_member->team_id)->first()->player_id;
-
             Profile::where('user_id', $team_owner_id)->increment('total_balance', $refund_amount);
-
             $event_member->delete();
+
+            Transaction::create([
+                'user_id' => $team_owner_id,
+                'type' => 'Refund',
+                'message' => '$' . $refund_amount . ' refund in your wallet.',
+                'amount' => $refund_amount,
+                'data' => Carbon::now()->format('Y-m-d'),
+                'status' => 'Completed',
+            ]);
+
             return true;
         } else {
-            $refund_amount = Event::where('id', $event_member->event_id)->first()->entry_free;
             Profile::where('user_id', $event_member->player_id)->increment('total_balance', $refund_amount);
             $event_member->delete();
+
+            Transaction::create([
+                'user_id' => $event_member->player_id,
+                'type' => 'Refund',
+                'message' => '$' . $refund_amount . ' refund in your wallet.',
+                'amount' => $refund_amount,
+                'data' => Carbon::now()->format('Y-m-d'),
+                'status' => 'Completed',
+            ]);
+
             return true;
         }
     }
