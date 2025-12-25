@@ -28,7 +28,7 @@ class RefundController extends Controller
     {
         try {
             $result = $this->refundService->confirmRefund($id);
-            return $this->sendResponse($result, 'Refund list successfully retrieved.');
+            return $this->sendResponse($result, 'Refund confirmed successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
@@ -38,7 +38,7 @@ class RefundController extends Controller
     {
         try {
             $result = $this->refundService->cancelRefund($id);
-            return $this->sendResponse($result, 'Refund list successfully retrieved.');
+            return $this->sendResponse([], 'Refund canceled successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

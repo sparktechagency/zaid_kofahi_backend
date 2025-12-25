@@ -115,18 +115,22 @@ class TransactionService
         /* ================= ADMIN / FINANCE / SUPPORT ================= */
         if (in_array(Auth::user()->role, ['ADMIN', 'FINANCE', 'SUPPORT'])) {
 
-            $transactions = Transaction::with('user:id,full_name')->when($days, function ($q) use ($days) {
+            $transactions = Transaction::with('user:id,full_name,user_name')->when($days, function ($q) use ($days) {
                 $q->whereDate('date', '>=', Carbon::now()->subDays($days));
             })
                 ->latest()
                 ->paginate($per_page ?? 10);
 
-            $withdraws = Withdraw::with('user:id,full_name')
+            $withdraws = Withdraw::with('user:id,full_name,user_name')
                 ->when($days, function ($q) use ($days) {
                     $q->whereDate('date', '>=', Carbon::now()->subDays($days));
                 })
                 ->latest()
                 ->paginate($per_page ?? 10);
+
+            foreach ($transactions as $transaction) {
+                $transaction->event_name = Event::where('id', $transaction->event_id)->first()->title ?? null;
+            }
 
             return [
                 'withdraw_histories' => $withdraws,
@@ -135,7 +139,7 @@ class TransactionService
         }
 
         /* ================= PLAYER / USER ================= */
-        $transactions = Transaction::with('user:id,full_name')->where('user_id', Auth::id())
+        $transactions = Transaction::with('user:id,full_name,user_name')->where('user_id', Auth::id())
             ->when($days, function ($q) use ($days) {
                 $q->whereDate('date', '>=', Carbon::now()->subDays($days));
             })
@@ -150,6 +154,7 @@ class TransactionService
             $transaction->date = $transaction->date
                 ? Carbon::parse($transaction->date)->format('M d, Y')
                 : 'Date not available';
+
         }
 
         $profile = Profile::where('user_id', Auth::id())->first();

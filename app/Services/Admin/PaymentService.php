@@ -2,8 +2,13 @@
 
 namespace App\Services\Admin;
 
+use App\Models\Event;
 use App\Models\Payment;
+use App\Models\Profile;
+use App\Models\Team;
+use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 
 class PaymentService
 {
@@ -20,20 +25,35 @@ class PaymentService
         $payment_players = Payment::where('role', 'PLAYER')->latest()->paginate();
 
         $payment_players->getCollection()->transform(function ($payment) {
-            // winners decode
+
             $winners = json_decode($payment->winners, true);
 
             if (is_array($winners)) {
-                // প্রত্যেক winner এর সাথে player attach করা
-                foreach ($winners as &$winner) {
-                    $player = User::select('id', 'full_name', 'role')
-                        ->find($winner['player_id'] ?? null);
 
-                    $winner['player'] = $player;
+                foreach ($winners as &$winner) {
+
+                    // ------- Single Player Winner -------
+                    if (!empty($winner['player_id'])) {
+
+                        $winner['player'] = User::select('id', 'full_name', 'role')
+                            ->find($winner['player_id']);
+
+                    }
+
+                    // ------- Team Winner -------
+                    if (!empty($winner['team_id'])) {
+
+                        $team = Team::with('player:id,full_name,role')
+                            ->select('id', 'name', 'player_id')
+                            ->find($winner['team_id']);
+
+                        $winner['team'] = $team;
+                    }
                 }
             }
 
             $payment->winners = $winners;
+
             return $payment;
         });
 
@@ -47,14 +67,57 @@ class PaymentService
 
     public function confirmPayment($id)
     {
-        $payment = Payment::where('id',$id)->first();
+        $payment = Payment::where('id', $id)->first();
+        $event = Event::find($payment->event_id);
 
-        if($payment->event_type == 'single'){
-            return 'single';
-        }else{
-            return 'team';
+        if ($payment->role == "ORGANIZER") {
+            $organizer_id = $payment->user_id;
+            $earning_amount = $payment->amount;
+            Profile::where('user_id', $organizer_id)->increment('total_earning', $earning_amount);
+            $transaction = Transaction::create([
+                'payment_intent_id' => '',
+                'user_id' => $organizer_id,
+                'event_id' => $payment->event_id,
+                'type' => 'Earning',
+                'message' => '$' . $earning_amount . ' earning form ' . $event->title,
+                'amount' => $earning_amount,
+                'data' => Carbon::now()->format('Y-m-d'),
+                'status' => 'Completed',
+            ]);
+            return $transaction;
         }
 
-        return $payment;
+        $winners = $payment->winners;
+
+        $arr = [];
+
+        foreach ($winners as $winner) {
+
+            if ($winner['player_id'] != null) {
+                $player_id = $winner['player_id'];
+            } else {
+                $player_id = Team::where('id', $winner['team_id'])->first()->player_id;
+            }
+
+            $winning_amount = $winner['amount'];
+
+            Profile::where('user_id', $player_id)->increment('total_earning', $winning_amount);
+
+            $transaction = Transaction::create([
+                'payment_intent_id' => '',
+                'user_id' => $player_id,
+                'event_id' => $payment->event_id,
+                'type' => 'Winning',
+                'message' => '$' . $winning_amount . ' winning form ' . $event->title,
+                'amount' => $winning_amount,
+                'data' => Carbon::now()->format('Y-m-d'),
+                'status' => 'Completed',
+            ]);
+
+            $arr[] = $transaction;
+        }
+
+        return $arr;
     }
+
 }

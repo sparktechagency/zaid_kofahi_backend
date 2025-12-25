@@ -77,7 +77,7 @@ class EventStartOrCancelStatus extends Command
                     'event_name' => $event->title,
                     'event_type' => $event->sport_type,
                     'participants' => $joined,
-                    'total_refund_amount' => $event->entry_fee * $joined,
+                    'total_refund_amount' => ($event->entry_fee * $joined) + $event->prize_amount,
                     'status' => 'Pending'
                 ]);
             }

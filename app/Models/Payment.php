@@ -10,4 +10,8 @@ class Payment extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+     protected $casts = [
+        'winners' => 'array', // JSON column কে auto array বানাবে
+    ];
 }
