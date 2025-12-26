@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Models\Report;
+use Illuminate\Validation\ValidationException;
 
 class DisputeService
 {
@@ -19,10 +20,16 @@ class DisputeService
         return Report::all();
 
     }
-
     public function reportSolve($id)
     {
-        $report = Report::where('id',$id)->first();
+        $report = Report::where('id', $id)->first();
+
+        if (!$report) {
+            throw ValidationException::withMessages([
+                'message' => 'Report id not found.',
+            ]);
+        }
+
         $report->status = 'Solved';
         $report->save();
 

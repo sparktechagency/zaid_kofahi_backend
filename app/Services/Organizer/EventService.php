@@ -36,10 +36,10 @@ class EventService
         $event = Event::create($data);
 
         Activity::create([
-            'date'=> Carbon::now()->format('Y-m-d'),
+            'date' => Carbon::now()->format('Y-m-d'),
             'user' => 'Organizer',
             'action' => 'Create Event',
-            'details' => 'Create ‘'.$event->title.'’ event'
+            'details' => 'Create ‘' . $event->title . '’ event'
         ]);
 
         return $event;
@@ -96,7 +96,9 @@ class EventService
         $event = Event::where('id', $id)->first();
 
         if (!$event) {
-            return response()->json(['message' => 'Event not found'], 404);
+            throw ValidationException::withMessages([
+                'message' => 'Event id not found.',
+            ]);
         }
 
         if (isset($data['image'])) {
@@ -144,7 +146,6 @@ class EventService
         }
         return $events;
     }
-
     public function getEvents(?int $per_page, ?string $search, ?string $filter)
     {
         $events = Event::query();
@@ -181,11 +182,16 @@ class EventService
 
         return $events;
     }
-
     public function viewEvent($id)
     {
         $event = Event::where('id', $id)
             ->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event id not found.',
+            ]);
+        }
 
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
@@ -196,6 +202,12 @@ class EventService
     {
         $event = Event::where('id', $id)
             ->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event id not found.',
+            ]);
+        }
 
         if ($event && $event->status == 'Pending Payment') {
             $event->delete();
@@ -213,7 +225,6 @@ class EventService
                 'message' => 'Event not found.',
             ]);
         }
-
 
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
@@ -262,8 +273,13 @@ class EventService
     }
     public function selectedWinner($data, $id)
     {
-
         $event = Event::where('id', $id)->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event id not found.',
+            ]);
+        }
 
         if ($event->status == 'Awaiting Confirmation') {
             throw ValidationException::withMessages([
@@ -271,33 +287,34 @@ class EventService
             ]);
         }
 
-        // if ($event->status == 'Event Over') {
-        $data = is_string($data) ? json_decode($data, true) : $data;
-        $winners = [];
-        foreach ($data as $item) {
-            $winners[] = Winner::create([
-                'event_id' => $id,
-                'place' => $item['place'],
-                'player_id' => $item['player_id'],
-                'team_id' => $item['team_id'] ?? null,
-                'amount' => $item['amount'],
-                'additional_prize' => $item['additional_prize'] ?? null,
+        if ($event->status == 'Event Over') {
+            $data = is_string($data) ? json_decode($data, true) : $data;
+            $winners = [];
+            foreach ($data as $item) {
+                $winners[] = Winner::create([
+                    'event_id' => $id,
+                    'place' => $item['place'],
+                    'player_id' => $item['player_id'],
+                    'team_id' => $item['team_id'] ?? null,
+                    'amount' => $item['amount'],
+                    'additional_prize' => $item['additional_prize'] ?? null,
+                ]);
+            }
+
+            $event->status = 'Awaiting Confirmation';
+            $event->save();
+
+            return $winners;
+        } else {
+            throw ValidationException::withMessages([
+                'message' => 'Wait until the this event are over.',
             ]);
         }
-
-        $event->status = 'Awaiting Confirmation';
-        $event->save();
-
-        return $winners;
-        // } else {
-        //     throw ValidationException::withMessages([
-        //         'message' => 'Wait until the this event are over.',
-        //     ]);
-        // }
     }
     public function remove($id, ?int $event_id)
     {
         $event = Event::find($event_id);
+        
         if (!$event) {
             throw ValidationException::withMessages([
                 'message' => 'Event not found.',
@@ -374,7 +391,6 @@ class EventService
         return $event_members;
 
     }
-
     public function eventPay($id)
     {
         $event = Event::where('id', $id)->where('organizer_id', Auth::id())->first();

@@ -9,40 +9,38 @@ use App\Models\Team;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class PaymentService
 {
-    /**
-     * Create a new class instance.
-     */
     public function __construct()
     {
         //
     }
-
     public function paymentList()
     {
         $payment_players = Payment::where('role', 'PLAYER')->latest()->paginate();
 
         $payment_players->getCollection()->transform(function ($payment) {
 
-            $winners = json_decode($payment->winners, true);
+            $winners = $payment->winners;
+
+            if (is_string($winners)) {
+                $winners = json_decode($winners, true);
+            }
+
+            $winners = $winners ?? [];
 
             if (is_array($winners)) {
 
                 foreach ($winners as &$winner) {
 
-                    // ------- Single Player Winner -------
                     if (!empty($winner['player_id'])) {
-
                         $winner['player'] = User::select('id', 'full_name', 'role')
                             ->find($winner['player_id']);
-
                     }
 
-                    // ------- Team Winner -------
                     if (!empty($winner['team_id'])) {
-
                         $team = Team::with('player:id,full_name,role')
                             ->select('id', 'name', 'player_id')
                             ->find($winner['team_id']);
@@ -64,10 +62,16 @@ class PaymentService
             'payment_organizer' => $payment_organizer,
         ];
     }
-
     public function confirmPayment($id)
     {
         $payment = Payment::where('id', $id)->first();
+
+        if (!$payment) {
+            throw ValidationException::withMessages([
+                'message' => 'Payment id not found.',
+            ]);
+        }
+
         $event = Event::find($payment->event_id);
 
         if ($payment->role == "ORGANIZER") {
@@ -89,7 +93,7 @@ class PaymentService
 
         $winners = $payment->winners;
 
-        $arr = [];
+        $transactions = [];
 
         foreach ($winners as $winner) {
 
@@ -114,10 +118,10 @@ class PaymentService
                 'status' => 'Completed',
             ]);
 
-            $arr[] = $transaction;
+            $transactions[] = $transaction;
         }
 
-        return $arr;
+        return $transactions;
     }
 
 }

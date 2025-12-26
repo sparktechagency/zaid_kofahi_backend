@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\Winner;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class EventService
 {
@@ -29,27 +30,37 @@ class EventService
         }
         return $events;
     }
-
     public function viewEvent($id)
     {
-        $event = Event::with('organizer:id,full_name,user_name')->where('id', $id)
+        $event = Event::with('organizer:id,full_name,user_name')
+            ->where('id', $id)
             ->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event id not found.',
+            ]);
+        }
 
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
 
         return $event;
     }
-
     public function getWinners($id)
     {
         $events = Winner::where('event_id', $id)->latest()->get();
         return $events;
     }
-
     public function acceptWinner($id)
     {
         $winner = Winner::where('id', $id)->first();
+
+        if (!$winner) {
+            throw ValidationException::withMessages([
+                'message' => 'Winner id not found.',
+            ]);
+        }
 
         $winner->admin_approval = true;
         $winner->status = 'Accepted';
@@ -57,10 +68,15 @@ class EventService
 
         return $winner;
     }
-
     public function declineWinner($id)
     {
         $winner = Winner::where('id', $id)->first();
+
+        if (!$winner) {
+            throw ValidationException::withMessages([
+                'message' => 'Winner id not found.',
+            ]);
+        }
 
         $winner->admin_approval = false;
         $winner->status = 'Decline';
@@ -68,11 +84,15 @@ class EventService
 
         return $winner;
     }
-
     public function prizeDistribution($id)
     {
-
         $event = Event::where('id', $id)->first();
+
+        if (!$event) {
+            throw ValidationException::withMessages([
+                'message' => 'Event id not found.',
+            ]);
+        }
 
         $winners = Winner::where('event_id', $event->id)->where('status', 'Accepted')->get();
 

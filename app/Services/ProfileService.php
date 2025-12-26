@@ -52,11 +52,26 @@ class ProfileService
     }
     public function viewTeam($id)
     {
-        return Team::findOrFail($id);
+        $team = Team::find($id);
+
+        if (!$team) {
+            throw ValidationException::withMessages([
+                'message' => 'Team id not found.',
+            ]);
+        }
+
+        return $team;
     }
     public function editTeam($id, $data)
     {
-        $team = Team::findOrFail($id);
+        $team = Team::find($id);
+
+        if (!$team) {
+            throw ValidationException::withMessages([
+                'message' => 'Team id not found.',
+            ]);
+        }
+
         $team->update([
             'name' => $data['name'],
         ]);
@@ -64,7 +79,14 @@ class ProfileService
     }
     public function deleteTeam($id)
     {
-        $team = Team::findOrFail($id);
+        $team = Team::find($id);
+
+        if (!$team) {
+            throw ValidationException::withMessages([
+                'message' => 'Team id not found.',
+            ]);
+        }
+
         return $team->delete();
     }
     public function organizerProfileInfo()
@@ -143,7 +165,6 @@ class ProfileService
     }
     public function createReport($data)
     {
-
         $data['reported_by'] = Auth::id();
 
         return Report::create($data);
