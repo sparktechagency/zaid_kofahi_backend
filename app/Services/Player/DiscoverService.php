@@ -116,6 +116,16 @@ class DiscoverService
             ]);
         }
 
+        $entry_fee = $event->entry_fee;
+        $profile = Profile::where('user_id', Auth::id())->first();
+        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
+
+        if (!($entry_fee <= $available_balance)) {
+            throw ValidationException::withMessages([
+                'message' => 'You don' . "'" . 't have enough money in your wallet.',
+            ]);
+        }
+
         $member = EventMember::where('event_id', $id)
             ->where('player_id', Auth::id())
             ->exists();
@@ -166,17 +176,6 @@ class DiscoverService
         ]);
 
         Profile::where('user_id', Auth::id())->increment('total_event_joined', 1);
-
-        $entry_fee = $event->entry_fee;
-
-        $profile = Profile::where('user_id', Auth::id())->first();
-        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
-
-        if (!($entry_fee <= $available_balance)) {
-            throw ValidationException::withMessages([
-                'message' => 'You don' . "'" . 't have enough money in your wallet.',
-            ]);
-        }
 
         $profile->increment('total_expence', $entry_fee);
 
@@ -233,6 +232,17 @@ class DiscoverService
             ]);
         }
 
+        $entry_fee = $event->entry_fee;
+
+        $profile = Profile::where('user_id', Auth::id())->first();
+        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
+
+        if (!($entry_fee <= $available_balance)) {
+            throw ValidationException::withMessages([
+                'message' => 'You don' . "'" . 't have enough money in your wallet.',
+            ]);
+        }
+
         $member = EventMember::where('event_id', $id)
             ->where('team_id', $team_id)
             ->exists();
@@ -250,17 +260,6 @@ class DiscoverService
         ]);
 
         Profile::where('user_id', Auth::id())->increment('total_event_joined', 1);
-
-        $entry_fee = $event->entry_fee;
-
-        $profile = Profile::where('user_id', Auth::id())->first();
-        $available_balance = $profile->total_balance + $profile->total_earning - ($profile->total_expence + $profile->total_withdraw);
-
-        if (!($entry_fee <= $available_balance)) {
-            throw ValidationException::withMessages([
-                'message' => 'You don' . "'" . 't have enough money in your wallet.',
-            ]);
-        }
 
         $profile->increment('total_expence', $entry_fee);
 
