@@ -39,10 +39,10 @@ class Event extends Model
         return $this->hasMany(EventMember::class, 'event_id');
     }
 
-    // public function organizer()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
+    public function organizer()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     
 
