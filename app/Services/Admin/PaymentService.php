@@ -78,6 +78,10 @@ class PaymentService
             $organizer_id = $payment->user_id;
             $earning_amount = $payment->amount;
             Profile::where('user_id', $organizer_id)->increment('total_earning', $earning_amount);
+
+            $payment->status = 'Completed';
+            $payment->save();
+
             $transaction = Transaction::create([
                 'payment_intent_id' => '',
                 'user_id' => $organizer_id,
@@ -88,6 +92,7 @@ class PaymentService
                 'data' => Carbon::now()->format('Y-m-d'),
                 'status' => 'Completed',
             ]);
+
             return $transaction;
         }
 
@@ -106,6 +111,9 @@ class PaymentService
             $winning_amount = $winner['amount'];
 
             Profile::where('user_id', $player_id)->increment('total_earning', $winning_amount);
+
+            $payment->status = 'Completed';
+            $payment->save();
 
             $transaction = Transaction::create([
                 'payment_intent_id' => '',

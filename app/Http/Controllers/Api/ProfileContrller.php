@@ -73,10 +73,10 @@ class ProfileContrller extends Controller
         }
     }
 
-    public function playerProfileInfo()
+    public function playerProfileInfo(Request $request)
     {
         try {
-            $teams = $this->profileService->playerProfileInfo();
+            $teams = $this->profileService->playerProfileInfo($request->user_id);
             return $this->sendResponse($teams, 'Player profile informantion successfully retrieved.', true, 200);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
@@ -93,7 +93,7 @@ class ProfileContrller extends Controller
         }
     }
 
-     public function getFollowerFollowingList()
+    public function getFollowerFollowingList()
     {
         try {
             $result = $this->profileService->getFollowerFollowingList();

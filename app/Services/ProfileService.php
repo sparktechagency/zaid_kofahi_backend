@@ -52,7 +52,7 @@ class ProfileService
     }
     public function viewTeam($id)
     {
-        $team = Team::find($id);
+        $team = Team::with('members.player')->find($id);
 
         if (!$team) {
             throw ValidationException::withMessages([
@@ -119,23 +119,26 @@ class ProfileService
                 ->get(),
         ];
     }
-    public function playerProfileInfo()
+    public function playerProfileInfo($user_id)
     {
-        $following_list = Follow::where('user_id', Auth::id())->whereHas('follower', function ($q) {
+
+        $userId = $user_id ?? Auth::id();
+
+        $following_list = Follow::where('user_id', $userId)->whereHas('follower', function ($q) {
             $q->where('role', 'PLAYER');
         })->count();
 
-        $follower_list = Follow::where('follower_id', Auth::id())->whereHas('user', function ($q) {
+        $follower_list = Follow::where('follower_id', $userId)->whereHas('user', function ($q) {
             $q->where('role', 'PLAYER');
         })->count();
 
         $profiles = Profile::orderBy('total_earning', 'desc')->get();
-        $userProfile = Profile::where('user_id', Auth::id())->first();
+        $userProfile = Profile::where('user_id', $userId)->first();
         $rank = $profiles->search(function ($profile) use ($userProfile) {
             return $profile->id === $userProfile->id;
         }) + 1;
 
-        $userId = Auth::id();
+
 
         $userEvents = Event::where(function ($query) use ($userId) {
             $query->whereHas('members', function ($q) use ($userId) {
@@ -150,7 +153,7 @@ class ProfileService
             ->get();
 
         return [
-            'user_info' => User::with('profile')->where('id', Auth::id())->first(),
+            'user_info' => User::with('profile')->where('id', $userId)->first(),
             'follower_info' => [
                 'followings' => $following_list,
                 'followers' => $follower_list

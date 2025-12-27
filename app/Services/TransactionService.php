@@ -50,7 +50,6 @@ class TransactionService
             'transactions_histories' => $transactions
         ];
     }
-
     public function getTransactions2(?string $filter, ?int $per_page)
     {
         $days = in_array($filter, ['7', '15', '30']) ? (int) $filter : null;
@@ -107,7 +106,6 @@ class TransactionService
             'transactions_histories' => $transactions
         ];
     }
-
     public function getTransactions(?string $filter, ?int $per_page)
     {
         $days = in_array($filter, ['7', '15', '30']) ? (int) $filter : null;
@@ -169,11 +167,8 @@ class TransactionService
             'transactions_histories' => $transactions
         ];
     }
-
-
     public function withdraw($data)
     {
-
         $profile = Profile::find(Auth::id());
 
         $available_balance = ($profile->total_balance + $profile->total_earning) - ($profile->total_expence + $profile->total_withdraw);
@@ -198,7 +193,6 @@ class TransactionService
 
         return $withdraw;
     }
-
     public function requestAccept($id)
     {
         $withdraw = Withdraw::where('id', $id)->first();
@@ -225,8 +219,9 @@ class TransactionService
         $transaction = Transaction::create([
             'payment_intent_id' => '',
             'user_id' => $withdraw->user_id,
-            'event_id' => $data['event_id'] ?? null,
+            'event_id' => null,
             'type' => 'Withdraw',
+            'message' => '$'.$withdraw->amount.' withdraw form your wallet.',
             'amount' => $withdraw->amount,
             'data' => Carbon::now()->format('Y-m-d'),
             'status' => 'Completed',
