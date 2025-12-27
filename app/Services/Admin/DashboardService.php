@@ -23,10 +23,10 @@ class DashboardService
     public function dashboardInfo()
     {
         return [
-            'users' => User::where('role','!=','ADMIN')->latest()->count()??0,
-            'events' => Event::latest()->count()?? 0,
+            'users' => User::where('role', '!=', 'ADMIN')->latest()->count() ?? 0,
+            'events' => 0,
             'branch' => Branch::latest()->count() ?? 0,
-            'earning' => '$'.Profile::find(Auth::id())->total_earning ?? 0,
+            'earning' => '$' . Profile::find(Auth::id())->total_earning ?? 0,
             'recent_activities' => Activity::latest()->get() ?? [],
         ];
 
