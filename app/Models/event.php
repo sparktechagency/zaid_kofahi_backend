@@ -25,6 +25,9 @@ class Event extends Model
     //     });
     // }
 
+     // যদি টেবিল নাম ভিন্ন হয়:
+    protected $table = 'events';
+
     protected $appends = ['image_url'];
 
     public function getImageUrlAttribute()
