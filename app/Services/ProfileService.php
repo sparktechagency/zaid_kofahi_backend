@@ -155,6 +155,7 @@ class ProfileService
         return [
             'user_info' => User::with('profile')->where('id', $userId)->first(),
             'follower_info' => [
+                'is_follow' =>  Follow::where('follower_id', $userId)->where('user_id', Auth::id())->exists(),
                 'followings' => $following_list,
                 'followers' => $follower_list
             ],
