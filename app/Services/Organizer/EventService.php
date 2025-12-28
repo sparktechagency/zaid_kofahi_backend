@@ -150,6 +150,8 @@ class EventService
     {
         $events = Event::query();
 
+        $events->where('organizer_id',Auth::id());
+
         if (!empty($search)) {
             $events->where('title', 'like', "%$search%");
         }

@@ -200,57 +200,66 @@ class ProfileService
             'follower_following_list' => $follower_following_list
         ];
     }
-
     public function getFollowerFollowingList($search = null)
-{
-    // -------- Followers --------
-    $follower_list = Follow::with([
-        'user' => function ($q) {
-            $q->select('id', 'full_name', 'user_name', 'role');
-        }
-    ])
-        ->where('follower_id', Auth::id())
-        ->whereHas('user', function ($q) use ($search) {
-            $q->where('role', 'PLAYER');
-
-            if (!empty($search)) {
-                $q->where(function ($query) use ($search) {
-                    $query->where('full_name', 'like', "%{$search}%")
-                          ->orWhere('user_name', 'like', "%{$search}%");
-                });
+    {
+        // -------- Followers --------
+        $follower_list = Follow::with([
+            'user' => function ($q) {
+                $q->select('id', 'full_name', 'user_name', 'role');
             }
-        })
-        ->get();
+        ])
+            ->where('follower_id', Auth::id())
+            ->whereHas('user', function ($q) use ($search) {
+                $q->where('role', 'PLAYER');
 
-    // -------- Following --------
-    $following_list = Follow::with([
-        'follower' => function ($q) {
-            $q->select('id', 'full_name', 'user_name', 'role');
-        }
-    ])
-        ->where('user_id', Auth::id())
-        ->whereHas('follower', function ($q) use ($search) {
-            $q->where('role', 'PLAYER');
+                if (!empty($search)) {
+                    $q->where(function ($query) use ($search) {
+                        $query->where('full_name', 'like', "%{$search}%")
+                            ->orWhere('user_name', 'like', "%{$search}%");
+                    });
+                }
+            })
+            ->get();
 
-            if (!empty($search)) {
-                $q->where(function ($query) use ($search) {
-                    $query->where('full_name', 'like', "%{$search}%")
-                          ->orWhere('user_name', 'like', "%{$search}%");
-                });
+        // -------- Following --------
+        $following_list = Follow::with([
+            'follower' => function ($q) {
+                $q->select('id', 'full_name', 'user_name', 'role');
             }
-        })
-        ->get();
+        ])
+            ->where('user_id', Auth::id())
+            ->whereHas('follower', function ($q) use ($search) {
+                $q->where('role', 'PLAYER');
 
-    $follower_following_list = $follower_list->merge($following_list);
+                if (!empty($search)) {
+                    $q->where(function ($query) use ($search) {
+                        $query->where('full_name', 'like', "%{$search}%")
+                            ->orWhere('user_name', 'like', "%{$search}%");
+                    });
+                }
+            })
+            ->get();
 
-    return [
-        'follower_list' => $follower_list,
-        'following_list' => $following_list,
-        'follower_following_list' => $follower_following_list
-    ];
-}
+        // $follower_following_list = $follower_list->merge($following_list);
+
+        $allPlayers = collect()
+            ->merge(
+                $follower_list->map(fn($f) => $f->user)
+            )
+            ->merge(
+                $following_list->map(fn($f) => $f->follower)
+            )
+            ->filter()                 // null remove
+            ->unique('id')             // unique by id
+            ->values();                // reset keys
 
 
+        return [
+            'follower_list' => $follower_list,
+            'following_list' => $following_list,
+            'players' => $allPlayers
+        ];
+    }
     public function share($id)
     {
         $event = Event::where('id', $id)->first();
@@ -265,5 +274,4 @@ class ProfileService
 
         return $event;
     }
-
 }
