@@ -93,10 +93,10 @@ class ProfileContrller extends Controller
         }
     }
 
-    public function getFollowerFollowingList()
+    public function getFollowerFollowingList(Request $request)
     {
         try {
-            $result = $this->profileService->getFollowerFollowingList();
+            $result = $this->profileService->getFollowerFollowingList($request->search);
             return $this->sendResponse($result, 'Get follower following list successfully retrieved.', true, 200);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

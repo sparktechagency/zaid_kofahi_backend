@@ -172,7 +172,7 @@ class ProfileService
 
         return Report::create($data);
     }
-    public function getFollowerFollowingList()
+    public function getFollowerFollowingList1($search)
     {
         $follower_list = Follow::with([
             'user' => function ($q) {
@@ -200,6 +200,57 @@ class ProfileService
             'follower_following_list' => $follower_following_list
         ];
     }
+
+    public function getFollowerFollowingList($search = null)
+{
+    // -------- Followers --------
+    $follower_list = Follow::with([
+        'user' => function ($q) {
+            $q->select('id', 'full_name', 'user_name', 'role');
+        }
+    ])
+        ->where('follower_id', Auth::id())
+        ->whereHas('user', function ($q) use ($search) {
+            $q->where('role', 'PLAYER');
+
+            if (!empty($search)) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('full_name', 'like', "%{$search}%")
+                          ->orWhere('user_name', 'like', "%{$search}%");
+                });
+            }
+        })
+        ->get();
+
+    // -------- Following --------
+    $following_list = Follow::with([
+        'follower' => function ($q) {
+            $q->select('id', 'full_name', 'user_name', 'role');
+        }
+    ])
+        ->where('user_id', Auth::id())
+        ->whereHas('follower', function ($q) use ($search) {
+            $q->where('role', 'PLAYER');
+
+            if (!empty($search)) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('full_name', 'like', "%{$search}%")
+                          ->orWhere('user_name', 'like', "%{$search}%");
+                });
+            }
+        })
+        ->get();
+
+    $follower_following_list = $follower_list->merge($following_list);
+
+    return [
+        'follower_list' => $follower_list,
+        'following_list' => $following_list,
+        'follower_following_list' => $follower_following_list
+    ];
+}
+
+
     public function share($id)
     {
         $event = Event::where('id', $id)->first();
