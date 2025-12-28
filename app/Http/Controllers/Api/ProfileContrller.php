@@ -26,10 +26,10 @@ class ProfileContrller extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-    public function getTeams()
+    public function getTeams(Request $request)
     {
         try {
-            $teams = $this->profileService->getTeams();
+            $teams = $this->profileService->getTeams($request->user_id);
             return $this->sendResponse($teams, 'All teams successfully retrieved.', true, 200);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

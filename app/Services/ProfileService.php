@@ -46,9 +46,9 @@ class ProfileService
         return $team;
 
     }
-    public function getTeams()
+    public function getTeams($user_id)
     {
-        return Team::with('members')->where('player_id', Auth::id())->get();
+        return Team::with('members')->where('player_id', $user_id ?? Auth::id())->get();
     }
     public function viewTeam($id)
     {
