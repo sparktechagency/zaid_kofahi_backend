@@ -29,9 +29,9 @@ class TeamController extends Controller
         try {
             $result = $this->teamService->viewTeam($id);
             if (!$result) {
-                return $this->sendError('Event not found.', [], 404);
+                return $this->sendError('Team not found.', [], 404);
             }
-            return $this->sendResponse($result, 'Event successfully retrieved.');
+            return $this->sendResponse($result, 'Team successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }

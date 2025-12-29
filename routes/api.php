@@ -60,6 +60,7 @@ Route::middleware('auth:api')->group(function () {
     // trnasaction
     Route::get('/get-transactions', [TransactionController::class, 'getTransactions']);
     Route::post('/withdraw', [TransactionController::class, 'withdraw']);
+    Route::get('/get-withdraw-histories', [TransactionController::class, 'getWithdrawHistories']);
 
     // follow unfollow toggle
     Route::post('/follow-unfollow-toggle/{id?}', [FollowController::class, 'followUnfollowToggle']);

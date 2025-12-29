@@ -9,6 +9,7 @@ use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Follow;
 use App\Models\Profile;
+use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\Transaction;
 use App\Models\User;
@@ -90,6 +91,13 @@ class DiscoverService
 
             $event->max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
             $event->joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
+
+            $event->is_join = EventMember::where('event_id', $event->id)
+                ->where(function ($q) {
+                    $q->where('player_id', Auth::id())
+                        ->orWhere('team_id', Team::where('player_id', Auth::id())->first()->id);
+                })
+                ->exists();
         }
 
         return $events;
@@ -253,6 +261,39 @@ class DiscoverService
             ]);
         }
 
+        $joined_players = collect();
+        $joined_teams = collect();
+
+        if ($event->sport_type === 'single') {
+            $joined_players = EventMember::with([
+                'player' => function ($q) {
+                    $q->select('id', 'full_name', 'user_name', 'avatar');
+                }
+            ])->where('event_id', $event->id)->get();
+        } else {
+            $joined_teams = EventMember::with([
+                'team' => function ($q) {
+                    $q->select('id', 'name')
+                        ->with(['members.player:id,full_name,user_name,role,avatar']);
+                }
+            ])->where('event_id', $event->id)->get();
+
+            $joined_teams->each(function ($eventMember) {
+                if ($eventMember->team) {
+                    $eventMember->team->team_member_count = $eventMember->team->members->count();
+                }
+            });
+        }
+
+        $max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
+        $joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
+
+        if ($max == $joined) {
+            throw ValidationException::withMessages([
+                'message' => 'You can' . "'" . 't join because the event is already full.',
+            ]);
+        }
+
         $join = EventMember::create([
             'team_id' => $team_id,
             'event_id' => $id,
@@ -366,7 +407,7 @@ class DiscoverService
         } else {
             $joined_teams = EventMember::with([
                 'team' => function ($q) {
-                    $q->select('id', 'name')
+                    $q->select('id', 'player_id', 'name')
                         ->with(['members.player:id,full_name,user_name,role,avatar']);
                 }
             ])->where('event_id', $id)->get();

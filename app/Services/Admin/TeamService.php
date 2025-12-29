@@ -17,15 +17,20 @@ class TeamService
 
     public function getTeams()
     {
-        return Team::with('members')->get();
+        $teams = Team::with(['player:id,full_name,user_name,role','members.player:id,full_name,user_name,role'])->get();
+
+
+        foreach ($teams as $team) {
+            //
+        }
+
+        return $teams;
     }
 
     public function viewTeam($id)
     {
-        $event = Team::with('members')
-            ->where('id', $id)
-            ->first();
+        $team = Team::with(['player:id,full_name,user_name,role','members.player:id,full_name,user_name,role'])->where('id', $id)->first();
 
-        return $event;
+        return $team;
     }
 }
