@@ -17,7 +17,6 @@ class RefundService
     {
         //
     }
-
     public function refundList()
     {
         $refunds = Refund::with(['event:id,organizer_id,title,number_of_player_required,number_of_team_required,number_of_player_required_in_a_team,entry_fee,prize_amount', 'event.organizer:id,full_name,role'])
@@ -31,7 +30,6 @@ class RefundService
 
         return $refunds;
     }
-
     public function confirmRefund($id)
     {
         $refund = Refund::find($id);
@@ -111,7 +109,6 @@ class RefundService
             ];
         }
     }
-
     public function cancelRefund($id)
     {
         $refund = Refund::find($id);

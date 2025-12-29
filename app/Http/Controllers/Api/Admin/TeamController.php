@@ -14,7 +14,7 @@ class TeamController extends Controller
     {
         $this->teamService = $teamService;
     }
-     public function getTeams()
+    public function getTeams()
     {
         try {
             $result = $this->teamService->getTeams();
@@ -23,7 +23,6 @@ class TeamController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function viewTeam($id)
     {
         try {

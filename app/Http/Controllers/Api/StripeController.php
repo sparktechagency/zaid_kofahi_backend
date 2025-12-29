@@ -107,7 +107,6 @@ class StripeController extends Controller
             ], 500);
         }
     }
-
     public function paymentIntent(Request $request)
     {
         $validator = Validator::make($request->all(), [

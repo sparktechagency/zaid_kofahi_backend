@@ -14,7 +14,6 @@ class UserService
     {
         //
     }
-
     public function getUsers(?string $search , ?string $filter)
     {
         $query = User::query();

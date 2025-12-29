@@ -17,7 +17,6 @@ class TransactionController extends Controller
     {
         $this->transactionService = $transactionService;
     }
-
     public function getTransactions(Request $request)
     {
         try {
@@ -27,7 +26,6 @@ class TransactionController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function withdraw(WithdrawRequest $request)
     {
         try {
@@ -38,7 +36,6 @@ class TransactionController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function requestAccept($id)
     {
         try {
@@ -48,7 +45,6 @@ class TransactionController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function getWithdrawHistories(Request $request)
     {
         try {

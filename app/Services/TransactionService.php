@@ -229,13 +229,10 @@ class TransactionService
 
         return $transaction;
     }
-
     public function getWithdrawHistories(?string $filter, ?int $per_page)
     {
         $histories = Withdraw::with('user:id,full_name,user_name,role')->where('user_id',Auth::id())->latest()->get();
 
         return $histories;
     }
-
-    
 }

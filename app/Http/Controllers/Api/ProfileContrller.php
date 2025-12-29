@@ -62,7 +62,6 @@ class ProfileContrller extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function organizerProfileInfo()
     {
         try {
@@ -72,7 +71,6 @@ class ProfileContrller extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function playerProfileInfo(Request $request)
     {
         try {
@@ -82,7 +80,6 @@ class ProfileContrller extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function createReport(CreateReportRequest $request)
     {
         try {
@@ -92,7 +89,6 @@ class ProfileContrller extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function getFollowerFollowingList(Request $request)
     {
         try {
@@ -102,7 +98,6 @@ class ProfileContrller extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function share($id)
     {
         try {

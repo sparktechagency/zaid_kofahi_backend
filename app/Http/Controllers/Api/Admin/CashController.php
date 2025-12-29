@@ -15,7 +15,6 @@ class CashController extends Controller
     {
         $this->cashServece = $cashServece;
     }
-
     public function getCashRequests()
     {
         try {
@@ -25,7 +24,6 @@ class CashController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function cashVerification($id)
     {
         try {
@@ -35,7 +33,6 @@ class CashController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function deleteRequest($id): JsonResponse
     {
         try {
@@ -45,7 +42,6 @@ class CashController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function cashSingleJoin(Request $request, $id)
     {
         try {

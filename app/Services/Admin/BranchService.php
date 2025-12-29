@@ -14,7 +14,6 @@ class BranchService
     {
         //
     }
-
     public function getBranches()
     {
         return Branch::all();

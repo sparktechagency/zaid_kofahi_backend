@@ -14,17 +14,16 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
-     public function getUsers(Request $request)
+    public function getUsers(Request $request)
     {
         try {
-            $result = $this->userService->getUsers($request->search,$request->filter);
+            $result = $this->userService->getUsers($request->search, $request->filter);
             return $this->sendResponse($result, 'Get users successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
-     public function viewUser($id)
+    public function viewUser($id)
     {
         try {
             $result = $this->userService->viewUser($id);
@@ -33,8 +32,7 @@ class UserController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
-     public function blockUnblockToggle($id)
+    public function blockUnblockToggle($id)
     {
         try {
             $result = $this->userService->blockUnblockToggle($id);

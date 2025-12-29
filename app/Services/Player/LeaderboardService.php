@@ -49,7 +49,6 @@ class LeaderboardService
             ];
         }
     }
-
     public function leaderBoardInfo10($filter, $search, $event_id)
     {
         $event = Event::find($event_id);
@@ -104,7 +103,6 @@ class LeaderboardService
             ];
         }
     }
-
     public function leaderBoardInfo(?string $filter, ?string $search, ?int $event_id = null)
     {
         $query = User::where('role', 'PLAYER')
@@ -174,7 +172,6 @@ class LeaderboardService
             'error' => 'Invalid filter. Please use "earnings" or "events".'
         ];
     }
-
     public function getSportNamesOnlyYouJoin1($event_id)
     {
         $event_members = EventMember::latest()->get();
@@ -204,7 +201,6 @@ class LeaderboardService
         return $arr1;
 
     }
-
     public function getSportNamesOnlyYouJoin()
     {
         $playerId = Auth::id();

@@ -14,7 +14,6 @@ class DisputeService
     {
         //
     }
-
     public function getDisputes()
     {
         return Report::all();

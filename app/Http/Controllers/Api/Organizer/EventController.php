@@ -113,7 +113,6 @@ class EventController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function eventPay($id)
     {
         try {

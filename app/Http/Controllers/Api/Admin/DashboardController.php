@@ -14,7 +14,7 @@ class DashboardController extends Controller
     {
         $this->dashboardService = $dashboardService;
     }
-     public function dashboardInfo()
+    public function dashboardInfo()
     {
         try {
             $result = $this->dashboardService->dashboardInfo();

@@ -14,7 +14,7 @@ class DisputeController extends Controller
     {
         $this->disputeService = $disputeService;
     }
-     public function getDisputes()
+    public function getDisputes()
     {
         try {
             $result = $this->disputeService->getDisputes();
@@ -23,7 +23,6 @@ class DisputeController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function reportSolve($id)
     {
         try {

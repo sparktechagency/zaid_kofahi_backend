@@ -9,13 +9,11 @@ use Illuminate\Http\Request;
 
 class LeaderBoardController extends Controller
 {
-
-     protected $leadBoardService;
+    protected $leadBoardService;
     public function __construct(LeadBoardService $leadBoardService)
     {
         $this->leadBoardService = $leadBoardService;
     }
-
     public function leaderBoardInfo()
     {
         try {

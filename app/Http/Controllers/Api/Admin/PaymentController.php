@@ -23,7 +23,6 @@ class PaymentController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function confirmPayment($id)
     {
         try {
@@ -32,5 +31,5 @@ class PaymentController extends Controller
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
-    } 
+    }
 }

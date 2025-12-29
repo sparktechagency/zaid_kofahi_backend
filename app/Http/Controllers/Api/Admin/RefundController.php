@@ -23,7 +23,6 @@ class RefundController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function confirmRefund($id)
     {
         try {
@@ -33,7 +32,6 @@ class RefundController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function cancelRefund($id)
     {
         try {

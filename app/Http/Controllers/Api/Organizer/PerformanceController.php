@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 
 class PerformanceController extends Controller
 {
-     protected $performanceService;
+    protected $performanceService;
     public function __construct(PerformanceService $performanceService)
     {
         $this->performanceService = $performanceService;
     }
-     public function performanceInfo()
+    public function performanceInfo()
     {
         try {
             $members = $this->performanceService->performanceInfo();

@@ -13,7 +13,6 @@ class LeadBoardService
     {
         //
     }
-
     public function leaderBoardInfo()
     {
         $topEarnings = User::where('role', 'PLAYER')
@@ -35,5 +34,4 @@ class LeadBoardService
             'top_player_by_events_joined' => $topEvents
         ];
     }
-
 }

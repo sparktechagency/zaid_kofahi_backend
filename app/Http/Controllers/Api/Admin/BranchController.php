@@ -19,7 +19,6 @@ class BranchController extends Controller
     {
         $this->branchService = $branchService;
     }
-
     public function getBranches(): JsonResponse
     {
         try {
@@ -29,7 +28,6 @@ class BranchController extends Controller
              return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function createBranch(CreateBranchRequest $request): JsonResponse
     {
         try {
@@ -39,7 +37,6 @@ class BranchController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function viewBranch($id): JsonResponse
     {
         try {
@@ -49,7 +46,6 @@ class BranchController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function editBranch(EditBranchRequest $request, $id): JsonResponse
     {
         try {
@@ -59,7 +55,6 @@ class BranchController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-
     public function deleteBranch($id): JsonResponse
     {
         try {

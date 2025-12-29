@@ -19,7 +19,6 @@ class DashboardService
     {
         //
     }
-
     public function dashboardInfo()
     {
         return [

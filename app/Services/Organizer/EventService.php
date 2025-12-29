@@ -150,7 +150,7 @@ class EventService
     {
         $events = Event::query();
 
-        $events->where('organizer_id',Auth::id());
+        $events->where('organizer_id', Auth::id());
 
         if (!empty($search)) {
             $events->where('title', 'like', "%$search%");
@@ -316,7 +316,7 @@ class EventService
     public function remove($id, ?int $event_id)
     {
         $event = Event::find($event_id);
-        
+
         if (!$event) {
             throw ValidationException::withMessages([
                 'message' => 'Event not found.',

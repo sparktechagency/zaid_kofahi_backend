@@ -17,19 +17,13 @@ class TeamService
 
     public function getTeams()
     {
-        $teams = Team::with(['player:id,full_name,user_name,role','members.player:id,full_name,user_name,role'])->get();
-
-
-        foreach ($teams as $team) {
-            //
-        }
+        $teams = Team::with(['player:id,full_name,user_name,role', 'members.player:id,full_name,user_name,role'])->get();
 
         return $teams;
     }
-
     public function viewTeam($id)
     {
-        $team = Team::with(['player:id,full_name,user_name,role','members.player:id,full_name,user_name,role'])->where('id', $id)->first();
+        $team = Team::with(['player:id,full_name,user_name,role', 'members.player:id,full_name,user_name,role'])->where('id', $id)->first();
 
         return $team;
     }

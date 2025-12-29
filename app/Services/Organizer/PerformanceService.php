@@ -19,7 +19,6 @@ class PerformanceService
     {
         //
     }
-
     public function performanceInfo()
     {
         $follower_list = Follow::where('follower_id', Auth::id())->whereHas('user', function ($q) {
