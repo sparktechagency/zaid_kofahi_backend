@@ -94,8 +94,13 @@ class DiscoverService
 
             $event->is_join = EventMember::where('event_id', $event->id)
                 ->where(function ($q) {
-                    $q->where('player_id', Auth::id())
-                        ->orWhere('team_id', Team::where('player_id', Auth::id())->first()->id);
+                    $team = Team::where('player_id', Auth::id())->first();
+
+                    $q->where('player_id', Auth::id());
+
+                    if ($team) {
+                        $q->orWhere('team_id', $team->id);
+                    }
                 })
                 ->exists();
         }

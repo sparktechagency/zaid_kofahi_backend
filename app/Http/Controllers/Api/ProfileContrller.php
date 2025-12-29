@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Player\CreateReportRequest;
 use App\Http\Requests\Player\TeamCreateRequest;
 use App\Http\Requests\Player\TeamEditRequest;
+use App\Models\TeamMember;
+use App\Models\User;
+use App\Notifications\TeamCreateNotification;
 use App\Services\ProfileService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileContrller extends Controller
 {
@@ -21,6 +25,18 @@ class ProfileContrller extends Controller
     {
         try {
             $team = $this->profileService->createTeam($request->validated());
+
+            $team_members = TeamMember::where('team_id', $team->id)->where('player_id','!=',Auth::id())->pluck('player_id');
+
+            $from = Auth::user()->full_name;
+            $message = "";
+
+            $members = User::whereIn('id', $team_members)->get();
+
+            foreach ($members as $member) {
+                $member->notify(new TeamCreateNotification($from, $message));
+            }
+
             return $this->sendResponse($team, 'Team created successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

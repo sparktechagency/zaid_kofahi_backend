@@ -7,9 +7,16 @@ use App\Http\Requests\Organizer\CreateEventRequest;
 use App\Http\Requests\Organizer\EditEventRequest;
 use App\Http\Requests\Organizer\EventPayRequest;
 use App\Http\Requests\Organizer\SelectedWinnerRequest;
+use App\Models\Event;
+use App\Models\EventMember;
+use App\Models\Team;
+use App\Models\User;
+use App\Notifications\EventCreateNotification;
+use App\Notifications\KickOutNotification;
 use App\Services\Organizer\EventService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -23,6 +30,18 @@ class EventController extends Controller
         try {
             $validatedData = $request->validated();
             $event = $this->eventService->createEvent($validatedData);
+
+            $players = User::where('id', '!=', Auth::id())->get();
+
+            $from = Auth::user()->full_name;
+            $message = "";
+
+            Auth::user()->notify(new EventCreateNotification('You', $message));
+
+            foreach ($players as $player) {
+                $player->notify(new EventCreateNotification($from, $message));
+            }
+
             return $this->sendResponse($event, 'Event created successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
@@ -31,7 +50,7 @@ class EventController extends Controller
     public function getEvents(Request $request)
     {
         try {
-            $events = $this->eventService->getEvents($request->per_page,$request->search,$request->filter);
+            $events = $this->eventService->getEvents($request->per_page, $request->search, $request->filter);
             return $this->sendResponse($events, 'All events successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
@@ -95,13 +114,81 @@ class EventController extends Controller
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
-    public function remove(Request $request, $id)
+    public function remove1(Request $request, $id)
     {
         try {
-            $remove = $this->eventService->remove($id , $request->event_id);
+            $remove = $this->eventService->remove($id, $request->event_id);
+
+            $event_member = EventMember::where('id', $id)->first();
+
+            $from = Auth::user()->full_name;
+            $message = "";
+
+            $event = Event::find($request->event_id);
+
+            if ($event_member->player_id == null) {
+
+                $team_owner = Team::where('id', $event_member->team_id)->first()->player_id;
+
+                User::where('id', $team_owner)->first()->notify(new KickOutNotification($from, $message, $event->title));
+
+            } else {
+                $player = User::find($event_member->player_id);
+                $player->notify(new KickOutNotification($from, $message, $event->title));
+            }
+
             return $this->sendResponse([$remove], 'Event member remove successfully.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
+        }
+    }
+    public function remove(Request $request, $id)
+    {
+        try {
+
+            $event_member = EventMember::find($id);
+
+            if (!$event_member) {
+                return $this->sendError('Member not found', [], 404);
+            }
+
+            $from = Auth::user()->full_name;
+            $message = "";
+
+            $event = Event::find($request->event_id);
+
+            if ($event_member->player_id === null) {
+
+                $team = Team::find($event_member->team_id);
+
+                if ($team && $team->player_id) {
+                    $owner = User::find($team->player_id);
+
+                    if ($owner) {
+                        $owner->notify(new KickOutNotification($from, $message, $event?->title));
+                    }
+                }
+
+            } else {
+
+                $player = User::find($event_member->player_id);
+
+                if ($player) {
+                    $player->notify(new KickOutNotification($from, $message, $event?->title));
+                }
+            }
+
+            $remove = $this->eventService->remove($id, $request->event_id);
+
+            return $this->sendResponse([$remove], 'Event member removed successfully.');
+
+        } catch (Exception $e) {
+
+            return $this->sendError(
+                'Something went wrong!',
+                ['error' => $e->getMessage()],
+                500
+            );
         }
     }
     public function getEventMembersList($id)

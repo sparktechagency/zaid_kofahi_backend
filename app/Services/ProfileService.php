@@ -115,7 +115,7 @@ class ProfileService
             'recent_events' => Event::where('organizer_id', Auth::id())
                 ->select('id', 'title', 'sport_type', 'status')
                 ->latest()
-                ->take(3)
+                ->take(5)
                 ->get(),
         ];
     }
