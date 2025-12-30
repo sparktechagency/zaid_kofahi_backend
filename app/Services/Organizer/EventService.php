@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Winner;
 use App\Notifications\EventCreateNotification;
 use App\Notifications\KickOutNotification;
+use App\Notifications\SelectedWinnerAdminNotification;
 use App\Notifications\SelectedWinnerNotification;
 use Carbon\Carbon;
 use Exception;
@@ -316,10 +317,9 @@ class EventService
                     'additional_prize' => $item['additional_prize'] ?? null,
                 ]);
 
-
-
                 $message = 'Prize money : ' . '$' . $item['amount'] . ' | Additional prize : ' . ($item['additional_prize'] == "" ? 'No additional prize yet.' : $item['additional_prize']);
                 User::find($item['player_id'])->notify(new SelectedWinnerNotification('', $message, $event->title, $item['place']));
+                User::find(1)->notify(new SelectedWinnerAdminNotification(User::find($item['player_id'])->full_name, $message, $event->title, $item['place']));
             }
 
             $event->status = 'Awaiting Confirmation';
