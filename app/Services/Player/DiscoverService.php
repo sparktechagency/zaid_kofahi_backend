@@ -337,6 +337,16 @@ class DiscoverService
             'details' => 'Join ‘' . $event->title . '’ by paying ' . $entry_fee
         ]);
 
+        $users = User::where('id', '!=', Auth::id())->get();
+        $from = Auth::user()->full_name;
+        $message = "";
+
+        Auth::user()->notify(new EventJoinNotification('You', $message, $event->title));
+
+        foreach ($users as $user) {
+            $user->notify(new EventJoinNotification($from, $message, $event->title));
+        }
+
         return [
             'join' => $join,
             'transaction' => $transaction

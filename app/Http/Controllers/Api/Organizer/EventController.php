@@ -31,18 +31,6 @@ class EventController extends Controller
         try {
             $validatedData = $request->validated();
             $event = $this->eventService->createEvent($validatedData);
-
-            $players = User::where('id', '!=', Auth::id())->get();
-
-            $from = Auth::user()->full_name;
-            $message = "";
-
-            Auth::user()->notify(new EventCreateNotification('You', $message));
-
-            foreach ($players as $player) {
-                $player->notify(new EventCreateNotification($from, $message));
-            }
-
             return $this->sendResponse($event, 'Event created successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

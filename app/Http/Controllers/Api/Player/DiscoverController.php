@@ -40,20 +40,6 @@ class DiscoverController extends Controller
     {
         try {
             $event = $this->discoverService->teamJoin($id, $request->team_id);
-
-            $users = User::where('id','!=',Auth::id())->get();
-
-            $from = Auth::user()->full_name;
-            $message = "";
-
-            $event = Event::find($id);
-
-            Auth::user()->notify(new EventJoinNotification('You', $message, $event->title));
-
-            foreach ($users as $user) {
-                $user->notify(new EventJoinNotification($from, $message, $event->title));
-            }
-
             return $this->sendResponse($event, 'Team join successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

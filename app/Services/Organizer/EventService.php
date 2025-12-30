@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Winner;
+use App\Notifications\EventCreateNotification;
 use App\Notifications\KickOutNotification;
 use App\Notifications\SelectedWinnerNotification;
 use Carbon\Carbon;
@@ -44,6 +45,16 @@ class EventService
             'action' => 'Create Event',
             'details' => 'Create ‘' . $event->title . '’ event'
         ]);
+
+        $players = User::where('id', '!=', Auth::id())->get();
+        $from = Auth::user()->full_name;
+        $message = "";
+
+        Auth::user()->notify(new EventCreateNotification('You', $message));
+
+        foreach ($players as $player) {
+            $player->notify(new EventCreateNotification($from, $message));
+        }
 
         return $event;
     }
