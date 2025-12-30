@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Winner;
+use App\Notifications\KickOutNotification;
 use App\Notifications\SelectedWinnerNotification;
 use Carbon\Carbon;
 use Exception;
@@ -306,7 +307,7 @@ class EventService
 
 
 
-                $message = 'Prize money : ' . '$'.$item['amount'] . ' | Additional prize : ' . ($item['additional_prize'] == "" ? 'No additional prize yet.' : $item['additional_prize']);
+                $message = 'Prize money : ' . '$' . $item['amount'] . ' | Additional prize : ' . ($item['additional_prize'] == "" ? 'No additional prize yet.' : $item['additional_prize']);
                 User::find($item['player_id'])->notify(new SelectedWinnerNotification('', $message, $event->title, $item['place']));
             }
 
@@ -353,6 +354,46 @@ class EventService
                 'status' => 'Completed',
             ]);
 
+            $from = Auth::user()->full_name;
+            $message = "";
+
+            User::find($team_owner_id)->notify(new KickOutNotification($from, $message, $event?->title));
+
+
+
+            // $event_member = EventMember::find($id);
+
+            // if (!$event_member) {
+            //     return $this->sendError('Member not found', [], 404);
+            // }
+
+            // $from = Auth::user()->full_name;
+            // $message = "";
+
+            // $event = Event::find($request->event_id);
+
+            // if ($event_member->player_id === null) {
+
+            //     $team = Team::find($event_member->team_id);
+
+            //     if ($team && $team->player_id) {
+            //         $owner = User::find($team->player_id);
+
+            //         if ($owner) {
+            //             $owner->notify(new KickOutNotification($from, $message, $event?->title));
+            //         }
+            //     }
+
+            // } else {
+
+            //     $player = User::find($event_member->player_id);
+
+            //     if ($player) {
+            //         $player->notify(new KickOutNotification($from, $message, $event?->title));
+            //     }
+            // }
+
+
             return true;
         } else {
             Profile::where('user_id', $event_member->player_id)->increment('total_balance', $refund_amount);
@@ -366,6 +407,12 @@ class EventService
                 'data' => Carbon::now()->format('Y-m-d'),
                 'status' => 'Completed',
             ]);
+
+            $from = Auth::user()->full_name;
+            $message = "";
+
+            User::find($event_member->player_id)->notify(new KickOutNotification($from, $message, $event?->title));
+
 
             return true;
         }

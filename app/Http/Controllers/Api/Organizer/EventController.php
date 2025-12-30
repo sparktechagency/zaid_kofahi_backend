@@ -146,50 +146,10 @@ class EventController extends Controller
     public function remove(Request $request, $id)
     {
         try {
-
-            $event_member = EventMember::find($id);
-
-            if (!$event_member) {
-                return $this->sendError('Member not found', [], 404);
-            }
-
-            $from = Auth::user()->full_name;
-            $message = "";
-
-            $event = Event::find($request->event_id);
-
-            if ($event_member->player_id === null) {
-
-                $team = Team::find($event_member->team_id);
-
-                if ($team && $team->player_id) {
-                    $owner = User::find($team->player_id);
-
-                    if ($owner) {
-                        $owner->notify(new KickOutNotification($from, $message, $event?->title));
-                    }
-                }
-
-            } else {
-
-                $player = User::find($event_member->player_id);
-
-                if ($player) {
-                    $player->notify(new KickOutNotification($from, $message, $event?->title));
-                }
-            }
-
             $remove = $this->eventService->remove($id, $request->event_id);
-
             return $this->sendResponse([$remove], 'Event member removed successfully.');
-
         } catch (Exception $e) {
-
-            return $this->sendError(
-                'Something went wrong!',
-                ['error' => $e->getMessage()],
-                500
-            );
+            return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
         }
     }
     public function getEventMembersList($id)
