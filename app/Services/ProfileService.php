@@ -9,6 +9,7 @@ use App\Models\Report;
 use App\Models\Team;
 use App\Models\TeamMember;
 use App\Models\User;
+use App\Notifications\TeamCreateNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
@@ -41,6 +42,15 @@ class ProfileService
                 'team_id' => $team->id,
                 'player_id' => $player_id,
             ]);
+        }
+
+        $team_members = TeamMember::where('team_id', $team->id)->where('player_id', '!=', Auth::id())->pluck('player_id');
+        $from = Auth::user()->full_name;
+        $message = "";
+        $members = User::whereIn('id', $team_members)->get();
+
+        foreach ($members as $member) {
+            $member->notify(new TeamCreateNotification($from, $message));
         }
 
         return $team;
@@ -155,7 +165,7 @@ class ProfileService
         return [
             'user_info' => User::with('profile')->where('id', $userId)->first(),
             'follower_info' => [
-                'is_follow' =>  Follow::where('follower_id', $userId)->where('user_id', Auth::id())->exists(),
+                'is_follow' => Follow::where('follower_id', $userId)->where('user_id', Auth::id())->exists(),
                 'followings' => $following_list,
                 'followers' => $follower_list
             ],

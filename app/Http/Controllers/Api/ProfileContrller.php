@@ -25,18 +25,6 @@ class ProfileContrller extends Controller
     {
         try {
             $team = $this->profileService->createTeam($request->validated());
-
-            $team_members = TeamMember::where('team_id', $team->id)->where('player_id','!=',Auth::id())->pluck('player_id');
-
-            $from = Auth::user()->full_name;
-            $message = "";
-
-            $members = User::whereIn('id', $team_members)->get();
-
-            foreach ($members as $member) {
-                $member->notify(new TeamCreateNotification($from, $message));
-            }
-
             return $this->sendResponse($team, 'Team created successfully.', true, 201);
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);
