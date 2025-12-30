@@ -7,19 +7,21 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class KickOutNotification extends Notification
+class SelectedWinnerNotification extends Notification
 {
     use Queueable;
 
     private $fromUser;
     private $message;
     private $title;
+    private $place;
 
-    public function __construct($fromUser, $message,$title)
+    public function __construct($fromUser, $message, $title, $place)
     {
         $this->fromUser = $fromUser;
         $this->message = $message;
         $this->title = $title;
+        $this->place = $place;
     }
 
     public function via($notifiable)
@@ -30,8 +32,8 @@ class KickOutNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'title' => "{$this->fromUser} kick out you form " . "'" . $this->title . "'" . " event",
-            'is_body_use' => false,
+            'title' => "You have been selected as the '{$this->place} place' from the '{$this->title}' event.",
+            'is_body_use' => true,
             'body' => $this->message,
         ];
     }

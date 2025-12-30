@@ -31,6 +31,7 @@ class EventJoinNotification extends Notification
     {
         return [
             'title' => "{$this->fromUser} join " . "'" . $this->title . "'" . " event.",
+            'is_body_use' => false,
             'body' => $this->message,
         ];
     }

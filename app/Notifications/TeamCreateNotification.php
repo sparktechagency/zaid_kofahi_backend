@@ -29,6 +29,7 @@ class TeamCreateNotification extends Notification
     {
         return [
             'title' => "{$this->fromUser} created a team with you.",
+            'is_body_use' => false,
             'body' => $this->message,
         ];
     }

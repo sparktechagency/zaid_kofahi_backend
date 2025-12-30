@@ -29,6 +29,7 @@ class EventCreateNotification extends Notification
     {
         return [
             'title' => "{$this->fromUser} new event created.",
+            'is_body_use' => false,
             'body'  => $this->message,
         ];
     }

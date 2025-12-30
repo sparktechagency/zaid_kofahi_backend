@@ -13,6 +13,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Notifications\EventCreateNotification;
 use App\Notifications\KickOutNotification;
+use App\Notifications\SelectedWinnerNotification;
 use App\Services\Organizer\EventService;
 use Exception;
 use Illuminate\Http\Request;
