@@ -14,10 +14,10 @@ class DashboardController extends Controller
     {
         $this->dashboardService = $dashboardService;
     }
-    public function dashboardInfo()
+    public function dashboardInfo(Request $request)
     {
         try {
-            $result = $this->dashboardService->dashboardInfo();
+            $result = $this->dashboardService->dashboardInfo($request->per_page);
             return $this->sendResponse($result, 'Dashboard information successfully retrieved.');
         } catch (Exception $e) {
             return $this->sendError('Something went wrong!', ['error' => $e->getMessage()], 500);

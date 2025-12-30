@@ -19,14 +19,14 @@ class DashboardService
     {
         //
     }
-    public function dashboardInfo()
+    public function dashboardInfo($per_page)
     {
         return [
             'users' => User::where('role', '!=', 'ADMIN')->latest()->count(),
             'events' => Event::latest()->count(),
             'branch' => Branch::latest()->count(),
             'earning' => '$' . Profile::find(Auth::id())->total_earning,
-            'recent_activities' => Activity::latest()->get()
+            'recent_activities' => Activity::latest()->paginate($per_page ?? 10)
         ];
 
     }
