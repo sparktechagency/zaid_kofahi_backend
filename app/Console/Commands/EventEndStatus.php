@@ -27,11 +27,14 @@ class EventEndStatus extends Command
      */
     public function handle()
     {
-        $now = Carbon::now();
+        // $now = Carbon::now()->format('Y-m-d');
+        $now = Carbon::today();   // আজকের দিন
 
         $events = Event::where('status', 'Ongoing')
             ->whereNotNull('ending_date')
-            ->where('ending_date', '<', $now)
+            // ->where('ending_date', $now)
+            // ->whereDate('ending_date',$now)
+            ->whereDate('ending_date', '<', $now)   // ending_date আজকের আগের দিন হলে
             ->get();
 
         foreach ($events as $event) {

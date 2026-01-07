@@ -29,11 +29,12 @@ class EventStartOrCancelStatus extends Command
      */
     public function handle()
     {
-        $now = Carbon::now();
+        $now = Carbon::now()->format('Y-m-d');
 
         $events = Event::where('status', 'Upcoming')
             ->whereNotNull('starting_date')
-            ->where('starting_date', '<', $now)
+            // ->where('starting_date', '<', $now)
+            ->whereDate('starting_date', $now)
             ->get();
 
         foreach ($events as $event) {

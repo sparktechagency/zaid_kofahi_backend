@@ -26,8 +26,14 @@ class CreateEventRequest extends FormRequest
             'description' => 'required|string',
             'sport_type' => 'required|string|in:single,team',
             'sport_name' => 'required|string',
-            'starting_date' => 'required|date',
-            'ending_date' => 'required|date|after_or_equal:starting_date',
+            // 'starting_date' => 'required|date',
+            // 'ending_date' => 'required|date|after_or_equal:starting_date',
+
+            // starting_date must be AFTER today (today allowed নয়)
+            'starting_date' => 'required|date|after:today',
+            // ending_date must be AFTER starting_date (equal allowed নয়)
+            'ending_date' => 'required|date|after:starting_date',
+
             'time' => 'required|date_format:g:i A',
             // 'time' => 'required|regex:/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/',
             'location' => 'required|string|max:255',
