@@ -169,6 +169,7 @@ class StripeController extends Controller
 
                 $profile = Profile::where('user_id', Auth::id())->first();
                 $profile->increment('total_balance', $paymentIntent->amount / 100);
+                Profile::find(1)->increment('total_balance', $paymentIntent->amount / 100); // for admin
 
                 $transaction = Transaction::create([
                     'payment_intent_id' => $paymentIntent->id,
