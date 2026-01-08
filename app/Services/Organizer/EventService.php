@@ -213,6 +213,35 @@ class EventService
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
 
+        
+        $joined_players = collect();
+        $joined_teams = collect();
+
+        if ($event->sport_type === 'single') {
+            $joined_players = EventMember::with([
+                'player' => function ($q) {
+                    $q->select('id', 'full_name', 'user_name', 'avatar');
+                }
+            ])->where('event_id', $id)->get();
+        } else {
+            $joined_teams = EventMember::with([
+                'team' => function ($q) {
+                    $q->select('id', 'name')
+                        ->with(['members.player:id,full_name,user_name,role,avatar']);
+                }
+            ])->where('event_id', $id)->get();
+
+            $joined_teams->each(function ($eventMember) {
+                if ($eventMember->team) {
+                    $eventMember->team->team_member_count = $eventMember->team->members->count();
+                }
+            });
+        }
+
+
+        $event->max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
+        $event->joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
+
         return $event;
     }
     public function deleteEvent($id)
