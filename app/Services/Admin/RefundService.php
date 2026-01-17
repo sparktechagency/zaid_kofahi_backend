@@ -69,7 +69,6 @@ class RefundService
                     'data' => Carbon::now()->format('Y-m-d'),
                     'status' => 'Completed',
                 ]);
-
             }
         } else {
             foreach ($event_members as $member) {
@@ -87,28 +86,29 @@ class RefundService
                     'status' => 'Completed',
                 ]);
             }
-
-            Profile::where('user_id', $event->organizer_id)->increment('total_balance', $prize_amount);
-            $organizer_transaction = Transaction::create([
-                'payment_intent_id' => '',
-                'user_id' => $event->organizer_id,
-                'event_id' => $event->id,
-                'type' => 'Refund',
-                'message' => '$' . $prize_amount . ' refund form ' . $event->title,
-                'amount' => $prize_amount,
-                'data' => Carbon::now()->format('Y-m-d'),
-                'status' => 'Completed',
-            ]);
-
-            $refund->status = 'Completed';
-            $refund->save();
-
-            return [
-                'player_transaction' => $player_transaction ?? [],
-                'organizer_transaction' => $organizer_transaction ?? [],
-            ];
         }
+
+        Profile::where('user_id', $event->organizer_id)->increment('total_balance', $prize_amount);
+        $organizer_transaction = Transaction::create([
+            'payment_intent_id' => '',
+            'user_id' => $event->organizer_id,
+            'event_id' => $event->id,
+            'type' => 'Refund',
+            'message' => '$' . $prize_amount . ' refund form ' . $event->title,
+            'amount' => $prize_amount,
+            'data' => Carbon::now()->format('Y-m-d'),
+            'status' => 'Completed',
+        ]);
+
+        $refund->status = 'Completed';
+        $refund->save();
+
+        return [
+            'player_transaction' => $player_transaction ?? [],
+            'organizer_transaction' => $organizer_transaction ?? [],
+        ];
     }
+    
     public function cancelRefund($id)
     {
         $refund = Refund::find($id);

@@ -96,7 +96,8 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => 'Login successful',
-                    'token' => $token
+                    'token' => $token,
+                    'user_role' => $existingUser->role
                 ], 200);
             } elseif (is_null($existingUser->google_id)) {
                 return response()->json([
@@ -117,7 +118,8 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => 'Login successful',
-                    'token' => $token
+                    'token' => $token,
+                    'user_role' => $existingUser->role
                 ], 200);
             }
         }
@@ -155,7 +157,7 @@ class AuthController extends Controller
             'status' => true,
             'message' => 'User registered and logged in successfully.',
             'token' => $token,
-            'data' => $user
+            'user_role' => $user->role
         ], 200);
     }
     public function verifyOtp(OtpVerifyRequest $request)
