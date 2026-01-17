@@ -127,11 +127,16 @@ class EventService
 
         if (isset($data['time']) && !empty($data['time'])) {
             try {
-                $data['time'] = Carbon::createFromFormat('h:i A', $data['time'])->format('H:i');  // 15:00
+                // $data['time'] = Carbon::createFromFormat('h:i A', $data['time'])->format('H:i');  // 15:00
+                 $data['time'] = Carbon::createFromFormat('g:i A', $data['time'])->format('H:i');  // 15:00
             } catch (Exception $e) {
                 return response()->json(['message' => 'Invalid time format'], 400);
             }
         }
+
+        // if (isset($data['prize_distribution'])) {
+        //     $data['prize_distribution'] = json_decode($data['prize_distribution'], true);
+        // }
 
         $event->title = $data['title'] ?? $event->title;
         $event->description = $data['description'] ?? $event->description;
@@ -147,7 +152,6 @@ class EventService
         $event->prize_amount = $data['prize_amount'] ?? $event->prize_amount;
         $event->prize_distribution = $data['prize_distribution'] ?? $event->prize_distribution;
         $event->rules_guidelines = $data['rules_guidelines'] ?? $event->rules_guidelines;
-
         $event->save();
 
         return $event;
