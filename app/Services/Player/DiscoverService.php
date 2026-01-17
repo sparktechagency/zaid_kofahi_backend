@@ -41,13 +41,10 @@ class DiscoverService
 
             if ($filter === 'today') {
                 $events->whereDate('created_at', Carbon::today());
-
             } elseif ($filter === 'tomorrow') {
                 $events->whereDate('starting_date', Carbon::tomorrow());
-
             } elseif ($filter === 'upcoming') {
                 $events->where('status', 'Upcoming');
-
             } elseif ($filter === 'weekend') {
                 // $events->whereIn(DB::raw('DAYOFWEEK(created_at)'), [6, 7]);
 
@@ -55,7 +52,6 @@ class DiscoverService
                     Carbon::now()->startOfWeek(), // Monday
                     Carbon::now()->endOfWeek()    // Sunday
                 ]);
-
             }
         }
 
@@ -64,7 +60,11 @@ class DiscoverService
         foreach ($events as $event) {
 
             $event->prize_distribution = json_decode($event->prize_distribution);
-            $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+            // $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
+
+            if (!empty($event->time)) {
+                $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('g:i A');
+            }
 
             $joined_players = collect();
             $joined_teams = collect();

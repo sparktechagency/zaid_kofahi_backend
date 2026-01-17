@@ -190,11 +190,52 @@ class EventService
         $events = $events->latest()->paginate($per_page ?? 10);
 
         foreach ($events as $event) {
+
             $event->prize_distribution = json_decode($event->prize_distribution);
+            // $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
 
             if (!empty($event->time)) {
                 $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('g:i A');
             }
+
+            $joined_players = collect();
+            $joined_teams = collect();
+
+            if ($event->sport_type === 'single') {
+                $joined_players = EventMember::with([
+                    'player' => function ($q) {
+                        $q->select('id', 'full_name', 'user_name', 'avatar');
+                    }
+                ])->where('event_id', $event->id)->get();
+            } else {
+                $joined_teams = EventMember::with([
+                    'team' => function ($q) {
+                        $q->select('id', 'name')
+                            ->with(['members.player:id,full_name,user_name,role,avatar']);
+                    }
+                ])->where('event_id', $event->id)->get();
+
+                $joined_teams->each(function ($eventMember) {
+                    if ($eventMember->team) {
+                        $eventMember->team->team_member_count = $eventMember->team->members->count();
+                    }
+                });
+            }
+
+            $event->max = $event->sport_type == 'team' ? $event->number_of_team_required : $event->number_of_player_required;
+            $event->joined = ($event->sport_type === 'single') ? $joined_players->count() : $joined_teams->count();
+
+            $event->is_join = EventMember::where('event_id', $event->id)
+                ->where(function ($q) {
+                    $team = Team::where('player_id', Auth::id())->first();
+
+                    $q->where('player_id', Auth::id());
+
+                    if ($team) {
+                        $q->orWhere('team_id', $team->id);
+                    }
+                })
+                ->exists();
         }
 
         return $events;
@@ -213,7 +254,7 @@ class EventService
         $event->prize_distribution = json_decode($event->prize_distribution);
         $event->time = Carbon::createFromFormat('H:i:s', $event->time)->format('h:i A');
 
-        
+
         $joined_players = collect();
         $joined_teams = collect();
 
@@ -485,7 +526,6 @@ class EventService
         }
 
         return $event_members;
-
     }
     public function eventPay($id)
     {
@@ -533,6 +573,5 @@ class EventService
             'evnet' => $event,
             'transaction' => $transaction
         ];
-
     }
 }
