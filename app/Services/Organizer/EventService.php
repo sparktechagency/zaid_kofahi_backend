@@ -152,6 +152,7 @@ class EventService
         $event->prize_amount = $data['prize_amount'] ?? $event->prize_amount;
         $event->prize_distribution = $data['prize_distribution'] ?? $event->prize_distribution;
         $event->rules_guidelines = $data['rules_guidelines'] ?? $event->rules_guidelines;
+        $event->image = $data['image'] ?? $event->image;
         $event->save();
 
         return $event;
